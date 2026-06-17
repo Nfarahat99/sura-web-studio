@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="سُرَى icon">
+  <title>سُرَى — Surā Icon</title>
+  <desc>Two-wave glyph in navy with a green guiding-star dot above the upper wave.</desc>
+  <g id="sura-icon" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g id="waves" stroke="#1E2940" stroke-width="22">
+      <path id="wave-upper" d="M 60 230
+                               C 130 170, 210 170, 280 230
+                               C 330 270, 380 260, 420 230
+                               L 420 218" />
+      <path id="wave-lower" d="M 110 320
+                               C 175 280, 245 290, 305 320" />
+    </g>
+    <circle id="guiding-star" cx="430" cy="190" r="20" fill="#5B8A47" />
+  </g>
+</svg>

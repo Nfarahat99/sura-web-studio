@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="سُرَى master logo">
+  <title>سُرَى — Surā Master Logo</title>
+  <desc>Two waves + green guiding-star dot, with Arabic سُرَى, Latin Surā, and WEB STUDIO lockup.</desc>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700&amp;family=IBM+Plex+Sans:wght@300;400;500&amp;display=swap');
+    .ar-wordmark { font-family: 'Cairo', 'Tajawal', 'Segoe UI', sans-serif; fill: #1E2940; font-weight: 500; font-size: 140px; letter-spacing: -2px; }
+    .latin-wordmark { font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif; fill: #1E2940; font-weight: 300; font-size: 96px; letter-spacing: 4px; }
+    .studio-tag { font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif; fill: #1E2940; font-weight: 400; font-size: 30px; letter-spacing: 14px; }
+  </style>
+
+  <!-- Icon (waves + guiding-star) -->
+  <g id="icon" transform="translate(150, 50)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g id="waves" stroke="#1E2940" stroke-width="18">
+      <path d="M 30 180
+               C 80 130, 150 130, 210 180
+               C 250 215, 290 210, 320 180
+               L 320 170" />
+      <path d="M 70 250
+               C 125 215, 185 222, 235 248" />
+    </g>
+    <circle cx="332" cy="148" r="16" fill="#5B8A47" />
+  </g>
+
+  <!-- Arabic wordmark سُرَى -->
+  <text class="ar-wordmark" x="300" y="500" text-anchor="middle" direction="rtl">سُرَى</text>
+
+  <!-- Latin wordmark Surā -->
+  <text class="latin-wordmark" x="300" y="620" text-anchor="middle">Surā</text>
+
+  <!-- WEB STUDIO lockup -->
+  <text class="studio-tag" x="300" y="700" text-anchor="middle">WEB STUDIO</text>
+</svg>

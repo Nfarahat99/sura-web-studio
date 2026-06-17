@@ -1,0 +1,251 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #1E2940;
+  --color-navy-50: #F4F6FA;
+  --color-navy-100: #E1E6F0;
+  --color-navy-700: #2C3954;
+  --color-navy-900: #15192A;
+
+  --color-green: #5B8A47;
+  --color-green-light: #7BAE5F;
+  --color-green-dark: #3F8F5A;
+  /* Darker green for AA text on cream — passes 4.5:1 */
+  --color-green-ink: #34672A;
+
+  --color-cream: #F2EEE5;
+  --color-cream-dark: #E8E2D1;
+  --color-mist: #F0F2F5;
+
+  --color-charcoal: #1F2333;
+  --color-stone: #6B7280;
+  --color-ash: #D4D7DD;
+
+  --color-warning: #D89B2A;
+  --color-error: #C24B3D;
+  --color-info: #3C6E91;
+
+  --font-display: "Cairo", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans Arabic", "Cairo", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius-card: 14px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 1px 2px rgba(30,41,64,0.06), 0 4px 16px rgba(30,41,64,0.06);
+  --shadow-lift: 0 10px 30px rgba(30,41,64,0.12);
+  --shadow-ring: 0 0 0 3px rgba(91,138,71,0.35);
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Prevent iOS auto-zoom on form focus */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-navy);
+  font-family: var(--font-body);
+  /* Brand spec: Arabic body line-height = 1.75 */
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Tabular figures for prices/dates */
+  font-feature-settings: "ss01", "cv11";
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  /* Arabic display needs slightly more breathing room than Latin */
+  line-height: 1.2;
+  color: var(--color-navy);
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--color-green);
+  color: var(--color-cream);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Universal visible focus ring — never invisible for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Buttons/links with their own rounded surface get a soft ring instead */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+summary:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-ring);
+}
+
+/* Tabular numerals for prices, dates, phone numbers */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* ========================================================================
+ * Contrast safety net — boost any low-opacity text so it never disappears.
+ * Applies even if a component uses a faded utility by accident.
+ *
+ * Targets WCAG AA Normal (4.5:1). Brand colors:
+ *   cream  #F2EEE5 (warm bg)
+ *   navy   #1E2940 (primary text + dark sections)
+ *   stone  #6B7280 (gray) — only passes AA on white; fails on cream (~3.98:1)
+ *
+ * Strategy: any low/medium-opacity text utility is force-bumped to a value
+ * that passes AA on its intended background. We err high (opaque-ish).
+ * ====================================================================== */
+
+/* CRITICAL: Force text-cream to always be cream, regardless of any
+ * inherited or transition state. This catches the case where Arabic text
+ * on .bg-navy.text-cream buttons was rendering invisible (transition lag,
+ * font fallback, currentColor inheritance). */
+.text-cream,
+.text-cream\/90,
+.text-cream\/95,
+[class*="bg-navy"].text-cream,
+[class*="bg-charcoal"].text-cream,
+[class*="bg-green"].text-cream {
+  color: var(--color-cream) !important;
+}
+
+/* Cream text on dark bgs: anything below ~90% becomes ~90%. */
+.text-cream\/55,
+.text-cream\/60,
+.text-cream\/65,
+.text-cream\/70,
+.text-cream\/75,
+.text-cream\/80,
+.text-cream\/85 {
+  color: color-mix(in oklab, var(--color-cream) 92%, transparent) !important;
+}
+
+/* CRITICAL: Force text-navy to always be navy. Same reasoning as text-cream. */
+.text-navy,
+.text-navy\/90,
+.text-navy\/95,
+[class*="bg-cream"].text-navy,
+[class*="bg-white"].text-navy,
+[class*="bg-mist"].text-navy {
+  color: var(--color-navy) !important;
+}
+
+/* Navy text on cream/white bgs: anything below ~85% becomes ~88%. */
+.text-navy\/55,
+.text-navy\/60,
+.text-navy\/65,
+.text-navy\/70,
+.text-navy\/75,
+.text-navy\/80,
+.text-navy\/85 {
+  color: color-mix(in oklab, var(--color-navy) 90%, transparent) !important;
+}
+
+/* Stone text: replace gray-on-cream failure with a darker readable tone.
+ * Stone (#6B7280) on cream is ~3.98:1 → FAILS. We force it to navy/70 mix,
+ * which still reads as muted but passes 4.5:1 on cream and white.
+ * Authors who explicitly want true stone gray can opt in via .text-stone-raw. */
+.text-stone,
+.text-stone\/55,
+.text-stone\/60,
+.text-stone\/65,
+.text-stone\/70,
+.text-stone\/75,
+.text-stone\/80 {
+  color: color-mix(in oklab, var(--color-navy) 70%, transparent) !important;
+}
+.text-stone-raw {
+  color: var(--color-stone) !important;
+}
+
+/* Placeholders — Tailwind's placeholder: variants don't inherit the bumps
+ * above because they target ::placeholder. Force readable placeholder. */
+.placeholder\:text-stone\/70::placeholder,
+.placeholder\:text-stone\/60::placeholder,
+.placeholder\:text-stone::placeholder {
+  color: color-mix(in oklab, var(--color-navy) 60%, transparent) !important;
+  opacity: 1;
+}
+
+/* Green-light (#7BAE5F) is decorative-only on cream (3:1 — fails AA Normal).
+ * It is safe on navy/charcoal as eyebrow text. If anyone uses it as TEXT on
+ * a cream/white/mist surface, force it to green-ink (#34672A) which passes. */
+.bg-cream .text-green-light:not(svg):not([aria-hidden]),
+.bg-mist  .text-green-light:not(svg):not([aria-hidden]),
+.bg-white .text-green-light:not(svg):not([aria-hidden]) {
+  color: var(--color-green-ink) !important;
+}
+
+/* Borders that disappear: cream-border on navy at <30% reads as ~1.3:1
+ * (essentially invisible). Bump to ≥40% so outline CTAs are perceivable. */
+.border-cream\/15,
+.border-cream\/20,
+.border-cream\/25,
+.border-cream\/30 {
+  border-color: color-mix(in oklab, var(--color-cream) 45%, transparent) !important;
+}
+
+/* Ensure all section text inherits a sensible default if the section forgot one */
+section.bg-navy,
+section.bg-charcoal,
+.bg-navy > *:not([class*="text-"]),
+.bg-charcoal > *:not([class*="text-"]) {
+  color: var(--color-cream);
+}
+
+/* iOS form-zoom guard — min 16px on inputs */
+input, textarea, select {
+  font-size: 16px;
+}
+
+/* Respect safe-area insets for fixed elements */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-start {
+  padding-inline-start: env(safe-area-inset-left);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fade-up {
+    animation: fadeUp 0.6s ease-out both;
+  }
+  .fade-up-delay-1 { animation-delay: 80ms; }
+  .fade-up-delay-2 { animation-delay: 160ms; }
+  .fade-up-delay-3 { animation-delay: 240ms; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Subtle entrance for cards in grids */
+  .hover-lift { transition: transform 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms cubic-bezier(.2,.7,.2,1), border-color 180ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
