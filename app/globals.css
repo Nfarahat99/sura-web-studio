@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
 @theme {
+  /* ───────── Brand palette — refined depth ───────── */
   --color-navy: #1E2940;
+  --color-navy-deep: #0E1322;          /* NEW — hero, dark sections, gradient base */
+  --color-navy-mid: #2C3954;           /* NEW — cards on navy */
   --color-navy-50: #F4F6FA;
   --color-navy-100: #E1E6F0;
   --color-navy-700: #2C3954;
@@ -10,12 +13,17 @@
   --color-green: #5B8A47;
   --color-green-light: #7BAE5F;
   --color-green-dark: #3F8F5A;
-  /* Darker green for AA text on cream — passes 4.5:1 */
-  --color-green-ink: #34672A;
+  --color-green-ink: #34672A;          /* AA-safe text on cream */
+  --color-green-glow: #A6E26B;         /* NEW — neon glow accent, very sparse */
 
   --color-cream: #F2EEE5;
   --color-cream-dark: #E8E2D1;
   --color-mist: #F0F2F5;
+
+  /* Gold — used ONCE per page maximum (premium badge, single hero underline).
+     Tuned cooler/softer to harmonize with green & cream — not a competing color. */
+  --color-gold: #B89A6E;               /* softer, more harmonious */
+  --color-gold-deep: #7A6238;          /* gold text on cream */
 
   --color-charcoal: #1F2333;
   --color-stone: #6B7280;
@@ -25,24 +33,35 @@
   --color-error: #C24B3D;
   --color-info: #3C6E91;
 
+  /* ───────── Typography ───────── */
   --font-display: "Cairo", "IBM Plex Sans Arabic", system-ui, sans-serif;
   --font-body: "IBM Plex Sans Arabic", "Cairo", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  --radius-card: 14px;
-  --radius-anchor: 18px;
+  /* ───────── Radii ───────── */
+  --radius-card: 16px;
+  --radius-anchor: 22px;
   --radius-pill: 999px;
+  --radius-3xl: 28px;
 
-  --shadow-soft: 0 1px 2px rgba(30,41,64,0.04), 0 8px 24px rgba(30,41,64,0.05);
-  --shadow-lift: 0 14px 36px rgba(30,41,64,0.12);
-  --shadow-anchor: 0 14px 40px rgba(30,41,64,0.18);
-  --shadow-button: 0 6px 20px rgba(30,41,64,0.18);
-  --shadow-button-hover: 0 10px 28px rgba(30,41,64,0.22);
-  --shadow-ring: 0 0 0 3px rgba(91,138,71,0.35);
+  /* ───────── Shadow scale — layered depth ───────── */
+  --shadow-soft: 0 1px 2px rgba(14,19,34,0.04), 0 8px 24px rgba(14,19,34,0.05);
+  --shadow-lift: 0 14px 36px rgba(14,19,34,0.12);
+  --shadow-anchor: 0 14px 40px rgba(14,19,34,0.18);
+  --shadow-deep: 0 30px 80px -20px rgba(14,19,34,0.45), 0 8px 24px rgba(14,19,34,0.2);
+  --shadow-glow-green: 0 0 0 1px rgba(123,174,95,0.3), 0 12px 40px -8px rgba(91,138,71,0.35);
+  --shadow-button: 0 6px 20px rgba(14,19,34,0.22);
+  --shadow-button-hover: 0 16px 38px rgba(14,19,34,0.32);
+  --shadow-ring: 0 0 0 3px rgba(91,138,71,0.4);
 
+  /* ───────── Motion ───────── */
   --ease-out-quart: cubic-bezier(.2,.7,.2,1);
+  --ease-spring: cubic-bezier(.34,1.56,.64,1);
 }
 
+/* ============================================================
+ * Base
+ * ============================================================ */
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
@@ -56,14 +75,15 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-feature-settings: "ss01", "cv11";
+  overflow-x: clip;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.12;
   color: var(--color-navy);
-  letter-spacing: -0.005em;
+  letter-spacing: -0.012em;
   text-wrap: balance;
 }
 
@@ -74,12 +94,8 @@ p { text-wrap: pretty; }
   color: var(--color-cream);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+a { color: inherit; text-decoration: none; }
 
-/* Universal visible focus ring */
 :focus-visible {
   outline: 2px solid var(--color-green);
   outline-offset: 3px;
@@ -99,10 +115,17 @@ summary:focus-visible {
   font-feature-settings: "tnum";
 }
 
-/* =====================================================================
- * Dawn glow — soft cream-to-green-light radial gradient at the top of
- * every page. Set as a pseudo-element on <main>. "Morning after launch".
- * ===================================================================== */
+/* iOS form-zoom guard */
+input, textarea, select { font-size: 16px; }
+
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-start { padding-inline-start: env(safe-area-inset-left); }
+
+/* ============================================================
+ * Backgrounds — gradient meshes, noise, dawn glow
+ * ============================================================ */
+
+/* Dawn glow — soft warm radial at the top of light sections */
 .dawn-glow {
   position: relative;
 }
@@ -110,34 +133,76 @@ summary:focus-visible {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 480px;
+  height: 520px;
   pointer-events: none;
   z-index: 0;
-  background: radial-gradient(
-    ellipse 120% 60% at 50% 0%,
-    color-mix(in oklab, var(--color-green-light) 14%, transparent) 0%,
-    transparent 65%
-  );
+  background:
+    radial-gradient(
+      ellipse 90% 60% at 20% 0%,
+      color-mix(in oklab, var(--color-green-light) 12%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 80% 50% at 85% 10%,
+      color-mix(in oklab, var(--color-gold) 8%, transparent) 0%,
+      transparent 55%
+    );
 }
 .dawn-glow > * { position: relative; }
 
-/* =====================================================================
- * Guiding-star pulse — the dot above the hero horizon.
- * ===================================================================== */
-@keyframes starPulse {
-  0%, 100% { transform: scale(1); opacity: 0.88; }
-  50% { transform: scale(1.18); opacity: 1; }
-}
-.star-pulse {
-  animation: starPulse 2.8s ease-in-out infinite;
-  transform-origin: center;
+/* Night mesh — animated gradient mesh for dark hero/CTA */
+.night-mesh {
+  position: relative;
+  background:
+    radial-gradient(60% 80% at 15% 20%, color-mix(in oklab, var(--color-green) 14%, transparent), transparent 60%),
+    radial-gradient(50% 70% at 90% 80%, color-mix(in oklab, var(--color-info) 18%, transparent), transparent 65%),
+    radial-gradient(40% 60% at 50% 50%, color-mix(in oklab, var(--color-gold) 6%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--color-navy-deep) 0%, var(--color-navy) 100%);
 }
 
-/* =====================================================================
- * Contrast safety net — boost any low-opacity text so it never disappears.
- * Same logic as before, kept verbatim because it does real work.
- * ===================================================================== */
+/* Aurora — subtle moving gradient for hero accent.
+   Desktop only — the blur(40px) + animation creates paint pressure
+   on mid-tier mobile; static gradient there is plenty. */
+@keyframes auroraDrift {
+  0%   { transform: translate3d(-4%, -2%, 0) rotate(0deg); }
+  50%  { transform: translate3d(4%, 2%, 0) rotate(2deg); }
+  100% { transform: translate3d(-4%, -2%, 0) rotate(0deg); }
+}
+.aurora {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(40% 50% at 30% 30%, color-mix(in oklab, var(--color-green-glow) 26%, transparent), transparent 70%),
+    radial-gradient(35% 45% at 70% 70%, color-mix(in oklab, var(--color-gold) 18%, transparent), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+@media (min-width: 768px) {
+  .aurora {
+    filter: blur(40px);
+    animation: auroraDrift 18s ease-in-out infinite;
+  }
+}
 
+/* Film-grain noise overlay (premium tactility) — desktop only.
+   mix-blend-mode on large surfaces is expensive on mobile GPUs. */
+@media (min-width: 768px) {
+  .noise::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 200px 200px;
+    z-index: 1;
+  }
+}
+
+/* ============================================================
+ * Contrast safety net (preserved — does real work)
+ * ============================================================ */
 .text-cream,
 .text-cream\/90,
 .text-cream\/95,
@@ -185,9 +250,6 @@ summary:focus-visible {
 .text-stone\/80 {
   color: color-mix(in oklab, var(--color-navy) 70%, transparent) !important;
 }
-.text-stone-raw {
-  color: var(--color-stone) !important;
-}
 
 .placeholder\:text-stone\/70::placeholder,
 .placeholder\:text-stone\/60::placeholder,
@@ -216,85 +278,139 @@ section.bg-charcoal,
   color: var(--color-cream);
 }
 
-/* iOS form-zoom guard */
-input, textarea, select {
-  font-size: 16px;
-}
-
-.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-.safe-start { padding-inline-start: env(safe-area-inset-left); }
-
-/* =====================================================================
- * Card archetypes — encoded as utility classes so the markup stays clean.
- * Soft card = white on cream, hover-lifts. Anchor card = navy, static.
- * ===================================================================== */
+/* ============================================================
+ * Card archetypes — soft, anchor, glass, premium
+ * ============================================================ */
 .card-soft {
   background: #FFFFFF;
   border: 1px solid color-mix(in oklab, var(--color-ash) 70%, transparent);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-soft);
-  transition: transform 220ms var(--ease-out-quart),
-              box-shadow 220ms var(--ease-out-quart),
-              border-color 180ms ease-out;
+  transition: transform 280ms var(--ease-out-quart),
+              box-shadow 280ms var(--ease-out-quart),
+              border-color 200ms ease-out;
 }
 .card-soft.is-hoverable:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   box-shadow: var(--shadow-lift);
-  border-color: color-mix(in oklab, var(--color-green) 35%, var(--color-ash));
+  border-color: color-mix(in oklab, var(--color-green) 40%, var(--color-ash));
 }
+
 .card-anchor {
-  background: var(--color-navy);
+  background: linear-gradient(160deg, var(--color-navy) 0%, var(--color-navy-deep) 100%);
   color: var(--color-cream);
   border: 1px solid color-mix(in oklab, var(--color-green-light) 30%, var(--color-navy));
   border-radius: var(--radius-anchor);
   box-shadow: var(--shadow-anchor);
+  position: relative;
+  overflow: hidden;
+}
+.card-anchor::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, color-mix(in oklab, var(--color-green-glow) 22%, transparent) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-/* =====================================================================
- * Button system — implemented as semantic classes for consistency.
- * Min height 48px; tactile press feedback.
- * ===================================================================== */
+/* Glass card — for floating overlays on hero */
+.card-glass {
+  background: color-mix(in oklab, var(--color-cream) 6%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-cream) 16%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-radius: var(--radius-anchor);
+}
+
+/* Premium card — deep shadow, gold edge accent */
+.card-premium {
+  position: relative;
+  background: #FFFFFF;
+  border-radius: var(--radius-anchor);
+  box-shadow: var(--shadow-deep);
+  overflow: hidden;
+  isolation: isolate;
+}
+.card-premium::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(140deg,
+    color-mix(in oklab, var(--color-gold) 60%, transparent) 0%,
+    color-mix(in oklab, var(--color-green) 30%, transparent) 50%,
+    color-mix(in oklab, var(--color-navy) 20%, transparent) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ============================================================
+ * Button system
+ * ============================================================ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  height: 3rem;
-  padding-inline: 1.75rem;
+  height: 3.25rem;
+  padding-inline: 1.875rem;
   border-radius: var(--radius-pill);
-  font-weight: 500;
+  font-weight: 600;
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1;
-  transition: transform 200ms ease-out, background-color 200ms ease-out,
-              color 200ms ease-out, box-shadow 200ms ease-out,
-              border-color 200ms ease-out;
+  transition: transform 220ms var(--ease-out-quart),
+              background-color 220ms ease-out,
+              color 220ms ease-out,
+              box-shadow 220ms ease-out,
+              border-color 220ms ease-out;
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
+  position: relative;
+  isolation: isolate;
 }
-.btn:active { transform: translateY(0) scale(0.98); }
+.btn:active { transform: translateY(0) scale(0.97); }
 
 .btn-primary {
   background: var(--color-navy);
   color: var(--color-cream);
   box-shadow: var(--shadow-button);
 }
-.btn-primary:hover {
-  background: var(--color-charcoal);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-button-hover);
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg,
+    color-mix(in oklab, var(--color-green) 0%, transparent),
+    color-mix(in oklab, var(--color-green) 35%, transparent));
+  opacity: 0;
+  transition: opacity 260ms ease-out;
+  z-index: -1;
 }
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-button-hover);
+  background: var(--color-charcoal);
+}
+.btn-primary:hover::before { opacity: 1; }
 
 .btn-secondary {
   background: transparent;
   color: var(--color-navy);
-  border: 1px solid color-mix(in oklab, var(--color-navy) 30%, transparent);
+  border: 1.5px solid color-mix(in oklab, var(--color-navy) 28%, transparent);
 }
 .btn-secondary:hover {
   background: var(--color-navy);
   color: var(--color-cream);
   border-color: var(--color-navy);
+  transform: translateY(-2px);
 }
 
 .btn-on-navy {
@@ -303,12 +419,24 @@ input, textarea, select {
 }
 .btn-on-navy:hover {
   background: #ffffff;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.32);
+}
+
+.btn-accent {
+  background: var(--color-green);
+  color: var(--color-cream);
+  box-shadow: 0 8px 24px rgba(91,138,71,0.4);
+}
+.btn-accent:hover {
+  background: var(--color-green-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 38px rgba(91,138,71,0.55);
 }
 
 .btn-ghost {
   height: auto;
-  padding: 0 0 2px 0;
+  padding: 0 0 4px 0;
   border-radius: 0;
   background: transparent;
   color: var(--color-navy);
@@ -319,11 +447,14 @@ input, textarea, select {
   border-bottom-color: var(--color-green-ink);
 }
 
-/* =====================================================================
- * Animations — entrance, hover, signature moments.
- * ===================================================================== */
+/* Magnetic — applied by JS */
+.btn-magnetic { will-change: transform; }
+
+/* ============================================================
+ * Animations — entrance, hover, scroll-reveal, signature
+ * ============================================================ */
 @media (prefers-reduced-motion: no-preference) {
-  .fade-up { animation: fadeUp 0.6s var(--ease-out-quart) both; }
+  .fade-up { animation: fadeUp 0.7s var(--ease-out-quart) both; }
   .fade-up-delay-1 { animation-delay: 80ms; }
   .fade-up-delay-2 { animation-delay: 160ms; }
   .fade-up-delay-3 { animation-delay: 240ms; }
@@ -332,17 +463,113 @@ input, textarea, select {
   .fade-up-delay-6 { animation-delay: 480ms; }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
+    from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  .hover-lift {
-    transition: transform 220ms var(--ease-out-quart),
-                box-shadow 220ms var(--ease-out-quart),
-                border-color 180ms;
+  /* Scroll-reveal — initial state */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 720ms var(--ease-out-quart),
+                transform 820ms var(--ease-out-quart);
+    will-change: opacity, transform;
   }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-d1 { transition-delay: 80ms; }
+  .reveal-d2 { transition-delay: 160ms; }
+  .reveal-d3 { transition-delay: 240ms; }
+  .reveal-d4 { transition-delay: 320ms; }
+  .reveal-d5 { transition-delay: 400ms; }
+
+  /* Subtle infinite float for decorative glyphs */
+  @keyframes floatY {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-12px) rotate(2deg); }
+  }
+  .float-y { animation: floatY 6s ease-in-out infinite; }
 }
 
+/* Guiding-star pulse */
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); opacity: 0.88; }
+  50%      { transform: scale(1.22); opacity: 1; }
+}
+.star-pulse {
+  animation: starPulse 2.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Marquee — infinite horizontal scroll */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes marqueeReverse {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+.marquee-track {
+  display: flex;
+  gap: 3.5rem;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+  will-change: transform;
+}
+.marquee-track-reverse {
+  animation: marqueeReverse 40s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+.marquee-wrap {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Text marquee — huge brand text scrolling slowly */
+@keyframes textMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.text-marquee {
+  display: flex;
+  width: max-content;
+  animation: textMarquee 60s linear infinite;
+}
+
+/* Counter — for stats strip (counter-set animation) */
+@property --num {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+/* Tilt card — 3D perspective hover */
+.tilt-wrap { perspective: 1000px; }
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 320ms var(--ease-out-quart);
+  will-change: transform;
+}
+.tilt-card > * { transform: translateZ(0); }
+.tilt-card .tilt-pop { transform: translateZ(32px); transition: transform 320ms var(--ease-out-quart); }
+
+/* ============================================================
+ * Layered horizon — SVG positioning helpers
+ * ============================================================ */
+.horizon-line {
+  position: absolute;
+  inset-inline: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, color-mix(in oklab, var(--color-cream) 25%, transparent), transparent);
+}
+
+/* ============================================================
+ * Reduced motion — kill all decorative animation
+ * ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -350,19 +577,31 @@ input, textarea, select {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .star-pulse { animation: none !important; opacity: 1 !important; transform: scale(1) !important; }
+  .star-pulse,
+  .aurora,
+  .float-y,
+  .marquee-track,
+  .text-marquee {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
-/* =====================================================================
- * Native <details> accordion — clean open/close, no JS.
- * ===================================================================== */
+/* ============================================================
+ * Native <details> accordion
+ * ============================================================ */
 details > summary { list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
 details[open] .acc-indicator { transform: rotate(45deg); }
 
-/* =====================================================================
- * RTL-safe: process-timeline rail uses logical inset.
- * ===================================================================== */
+/* ============================================================
+ * Process-timeline rail
+ * ============================================================ */
 .timeline-rail {
   background: linear-gradient(
     to bottom,
@@ -370,4 +609,48 @@ details[open] .acc-indicator { transform: rotate(45deg); }
     color-mix(in oklab, var(--color-green) 20%, transparent),
     transparent
   );
+}
+
+/* ============================================================
+ * Display utility — oversized Arabic headline support
+ * ============================================================ */
+.display-hero {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
+}
+
+.text-balance { text-wrap: balance; }
+.text-pretty  { text-wrap: pretty; }
+
+/* Outline (stroked) text utility for layered headlines */
+.text-outline-cream {
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--color-cream) 30%, transparent);
+  color: transparent;
+}
+.text-outline-navy {
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--color-navy) 24%, transparent);
+  color: transparent;
+}
+
+/* Gold premium accent text — restrained, harmonious gradient */
+.text-gold {
+  color: var(--color-gold);
+  background: linear-gradient(135deg, var(--color-gold-deep) 0%, var(--color-gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Accent — context-aware: green-ink on cream, green-glow on navy.
+   Use this in headlines instead of .text-gold whenever possible. */
+.accent {
+  color: var(--color-green-ink);
+}
+.bg-navy .accent,
+.bg-navy-deep .accent,
+.night-mesh .accent,
+.card-anchor .accent {
+  color: var(--color-green-glow);
 }

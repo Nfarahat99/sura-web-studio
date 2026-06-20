@@ -296,6 +296,66 @@ export const VALUE_PILLARS: {
   },
 ];
 
+export type JourneyStepData = {
+  num: string;
+  title: string;
+  duration: string;
+  description: string;
+  icon: IconName;
+};
+
+/** Single source of truth for the 6-step "how we work" journey.
+    Consumed by app/page.tsx and app/services/page.tsx. */
+export const JOURNEY_STEPS: JourneyStepData[] = [
+  {
+    num: "01",
+    title: "مكالمة استكشاف",
+    duration: "30 إلى 45 دقيقة",
+    description:
+      "نفهم المشكلة، نتفاهم على الميزانية، ونتّفق على الخطوة التالية. مجاناً وبلا التزام.",
+    icon: "megaphone",
+  },
+  {
+    num: "02",
+    title: "مقترح خلال 24 ساعة",
+    duration: "نطاق وسعر واحد",
+    description:
+      "نطاق ثابت، جدول زمني، سعر واحد. لا فواتير مفاجئة بعد التوقيع.",
+    icon: "folder",
+  },
+  {
+    num: "03",
+    title: "عقد ودفعة 50%",
+    duration: "نباشر في نفس اليوم",
+    description: "اتفاقية واضحة، ونبدأ العمل في نفس يوم التوقيع.",
+    icon: "handshake",
+  },
+  {
+    num: "04",
+    title: "بناء تتابعه يومياً",
+    duration: "نسخة معاينة كلّ يوم",
+    description:
+      "نسخة معاينة جديدة كلّ يوم على Vercel — تشوف التقدّم بعينك بلا انتظار.",
+    icon: "code",
+  },
+  {
+    num: "05",
+    title: "إطلاق وتدريب",
+    duration: "ضمان 14 يوم",
+    description:
+      "ننقل الدومين، ندرّب فريقك على لوحة المحتوى، ونلتزم بضمان 14 يوم.",
+    icon: "rocket",
+  },
+  {
+    num: "06",
+    title: "متابعة بعد أسبوعين",
+    duration: "مكالمة مراجعة",
+    description:
+      "نتأكّد إنّ كلّ شي يشتغل، ونعرض عليك عقد صيانة لو احتجته — بلا ضغط.",
+    icon: "check",
+  },
+];
+
 export const BUNDLE_SCENARIOS = [
   {
     key: "starter",

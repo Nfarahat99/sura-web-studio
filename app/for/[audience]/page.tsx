@@ -2,8 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Icon from "@/components/Icon";
 import Eyebrow from "@/components/Eyebrow";
-import SectionHeader from "@/components/SectionHeader";
 import HorizonDivider from "@/components/HorizonDivider";
+import ScrollReveal from "@/components/ScrollReveal";
+import TiltCard from "@/components/TiltCard";
 import { AUDIENCE_OFFERS, AUDIENCES, type Audience } from "@/lib/data";
 
 type Params = { audience: Audience["key"] };
@@ -28,6 +29,12 @@ export async function generateMetadata({
   };
 }
 
+const SHORT_NAME: Record<Audience["key"], string> = {
+  smes: "الشركات الصغيرة",
+  charities: "الجمعيات",
+  manufacturers: "المصانع",
+};
+
 export default async function AudienceOfferPage({
   params,
 }: {
@@ -47,56 +54,72 @@ export default async function AudienceOfferPage({
 
   return (
     <>
-      <section className="dawn-glow bg-cream py-20 md:py-28">
-        <div className="mx-auto max-w-4xl px-5 md:px-8">
-          <div className="fade-up text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-green/30 bg-green/10 px-4 py-1.5 text-sm font-medium text-green-ink">
-              <Icon name={offer.icon} size={16} />
+      {/* Hero — cinematic dark */}
+      <section className="night-mesh noise relative isolate overflow-hidden pt-28 pb-24 text-cream md:pt-36 md:pb-32">
+        <div className="aurora" aria-hidden />
+        <div className="relative mx-auto max-w-5xl px-5 md:px-8">
+          <ScrollReveal>
+            <span className="card-glass inline-flex items-center gap-2 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.2em] text-cream/90">
+              <Icon name={offer.icon} size={14} className="text-green-glow" aria-hidden />
               <span dir="ltr">{offer.subtitle}</span>
             </span>
-            <h1 className="mt-6 text-[32px] font-display font-bold leading-[1.15] text-navy tracking-[-0.01em] md:text-[56px] md:leading-[1.08]">
+            <h1 className="display-hero mt-6 text-[40px] leading-[1.05] text-cream md:text-[72px]">
               {offer.heroLine}
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-[17px] leading-[1.75] text-navy/85 md:text-[18px]">
+            <p className="mt-7 max-w-3xl text-lg leading-[1.85] text-cream/85 md:text-xl">
               {offer.heroDescription}
             </p>
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <Link href="/contact" className="btn btn-primary">
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link href="/contact" className="btn btn-accent">
                 {offer.ctaPrimary}
-                <Icon name="arrow" size={16} style={{ transform: "scaleX(-1)" }} aria-hidden />
+                <Icon name="arrow" size={18} style={{ transform: "scaleX(-1)" }} aria-hidden />
               </Link>
-              <Link href="/pricing" className="btn btn-secondary">
+              <Link
+                href="/pricing"
+                className="inline-flex h-[3.25rem] items-center gap-2 rounded-full border border-cream/35 px-7 text-cream transition hover:border-green-glow hover:text-green-glow"
+              >
                 {offer.ctaSecondary}
               </Link>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      <section className="bg-mist py-20 md:py-28">
+      {/* Pains */}
+      <section className="bg-cream-dark py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-5 md:px-8">
-          <SectionHeader
-            eyebrow="المشكلة"
-            title="نسمعها كلّ مكالمة"
-            lede={`ثلاث آلام نسمعها من ${offer.title.replace("سُرَى ", "")} — وكيف نحلّها.`}
-          />
+          <ScrollReveal>
+            <Eyebrow>نسمعها كلّ مكالمة</Eyebrow>
+            <h2 className="display-hero mt-4 max-w-3xl text-[36px] leading-[1.05] text-navy md:text-[52px]">
+              ثلاث آلام نسمعها من{" "}
+              <span className="accent">{SHORT_NAME[audience]}</span>.
+            </h2>
+            <p className="mt-5 max-w-xl text-lg text-navy/75">
+              نبدأ من ألمك، لا من كتالوج خدمات. هذه أوّل ثلاثة أشياء نسمعها
+              كلّ مكالمة استكشاف.
+            </p>
+          </ScrollReveal>
 
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {offer.pains.map((p) => (
-              <article
-                key={p.title}
-                className="card-soft flex h-full flex-col p-7 md:p-9"
-              >
-                <div
-                  className={`inline-flex h-12 w-12 items-center justify-center rounded-xl ${painIconTone}`}
-                >
-                  <Icon name={p.icon} size={24} />
+          <div className="mt-14 grid gap-7 md:grid-cols-3">
+            {offer.pains.map((p, i) => (
+              <ScrollReveal key={p.title} delay={((i % 3) + 1) as 1 | 2 | 3}>
+                <div className="tilt-wrap h-full">
+                  <TiltCard className="card-premium h-full p-8 md:p-10">
+                    <span
+                      className={`tilt-pop inline-flex h-14 w-14 items-center justify-center rounded-2xl ${painIconTone}`}
+                    >
+                      <Icon name={p.icon} size={28} />
+                    </span>
+                    <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.28em] text-error/80">
+                      {String(i + 1).padStart(2, "0")} · ألم
+                    </p>
+                    <h3 className="mt-2 text-xl font-bold leading-tight text-navy md:text-2xl">
+                      {p.title}
+                    </h3>
+                    <p className="mt-3 text-navy/85">{p.description}</p>
+                  </TiltCard>
                 </div>
-                <h3 className="mt-5 text-[20px] font-bold leading-[1.3] text-navy md:text-[22px]">
-                  {p.title}
-                </h3>
-                <p className="mt-3 text-navy/85">{p.description}</p>
-              </article>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -104,166 +127,192 @@ export default async function AudienceOfferPage({
 
       <HorizonDivider />
 
-      <section className="bg-cream py-20 md:py-28">
+      {/* Solution */}
+      <section className="bg-cream py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-5 md:px-8">
-          <SectionHeader
-            eyebrow="الحلّ"
-            title="ماذا نبنيه لك"
-          />
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {offer.solution.map((s) => (
-              <article
-                key={s.title}
-                className="card-soft is-hoverable flex h-full flex-col p-7 md:p-9"
-              >
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-green/10 text-green-ink">
-                  <Icon name={s.icon} size={24} />
+          <ScrollReveal>
+            <Eyebrow>ماذا نبنيه لك</Eyebrow>
+            <h2 className="display-hero mt-4 max-w-3xl text-[36px] leading-[1.05] text-navy md:text-[52px]">
+              الحلّ — على{" "}
+              <span className="accent">مقاسك</span>.
+            </h2>
+          </ScrollReveal>
+          <div className="mt-14 grid gap-7 md:grid-cols-3">
+            {offer.solution.map((s, i) => (
+              <ScrollReveal key={s.title} delay={((i % 3) + 1) as 1 | 2 | 3}>
+                <div className="tilt-wrap h-full">
+                  <TiltCard className="card-premium h-full p-8 md:p-10">
+                    <span className="tilt-pop inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-navy to-navy-deep text-green-glow shadow-lg">
+                      <Icon name={s.icon} size={28} />
+                    </span>
+                    <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.28em] text-green-ink">
+                      {String(i + 1).padStart(2, "0")} · حلّ
+                    </p>
+                    <h3 className="mt-2 text-xl font-bold leading-tight text-navy md:text-2xl">
+                      {s.title}
+                    </h3>
+                    <p className="mt-3 text-navy/85">{s.description}</p>
+                  </TiltCard>
                 </div>
-                <h3 className="mt-5 text-[20px] font-bold leading-[1.3] text-navy md:text-[22px]">
-                  {s.title}
-                </h3>
-                <p className="mt-3 text-navy/85">{s.description}</p>
-              </article>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-mist py-20 md:py-28">
-        <div className="mx-auto max-w-5xl px-5 md:px-8">
-          <SectionHeader
-            eyebrow="الباقة المُقترحة لك"
-            title={offer.recommendedBundle.name}
-          />
+      {/* Recommended bundle */}
+      <section className="bg-cream-dark py-24 md:py-32">
+        <div className="mx-auto max-w-6xl px-5 md:px-8">
+          <ScrollReveal>
+            <Eyebrow>الباقة المُقترحة لك</Eyebrow>
+            <h2 className="display-hero mt-4 text-[32px] leading-[1.08] text-navy md:text-[44px]">
+              {offer.recommendedBundle.name}
+            </h2>
+          </ScrollReveal>
 
-          <article className="card-anchor mt-12 p-8 md:p-12">
-            <div className="grid items-start gap-10 md:grid-cols-5">
-              <div className="md:col-span-3">
-                <Eyebrow tone="light">يشمل</Eyebrow>
-                <ul className="mt-5 flex flex-col gap-3">
-                  {offer.recommendedBundle.items.map((item) => (
-                    <li key={item} className="flex items-start gap-3">
-                      <span className="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-light/20 text-green-light">
-                        <Icon name="check" size={12} />
-                      </span>
-                      <span className="text-cream/95">{item}</span>
-                    </li>
-                  ))}
-                </ul>
+          <ScrollReveal delay={2}>
+            <article className="card-anchor mt-12 overflow-hidden p-8 md:p-12">
+              <div className="relative z-10 grid items-start gap-10 md:grid-cols-5">
+                <div className="md:col-span-3">
+                  <Eyebrow tone="light">يشمل</Eyebrow>
+                  <ul className="mt-5 flex flex-col gap-3">
+                    {offer.recommendedBundle.items.map((item) => (
+                      <li key={item} className="flex items-start gap-3">
+                        <span className="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-glow/20 text-green-glow">
+                          <Icon name="check" size={14} />
+                        </span>
+                        <span className="text-cream/95">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
 
-                <div className="mt-7 rounded-2xl border border-green-light/30 bg-green-light/10 p-5">
-                  <p className="text-sm font-semibold uppercase tracking-wider text-green-light">
-                    🎁 الهدية
+                  <div className="mt-8 rounded-2xl border border-green-glow/30 bg-green-glow/10 p-6">
+                    <p className="text-xs font-bold uppercase tracking-[0.22em] text-green-glow">
+                      ★ الهدية
+                    </p>
+                    <p className="mt-3 text-cream/95">
+                      {offer.recommendedBundle.bonus}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-cream/30 bg-cream/5 p-6 md:col-span-2">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-green-glow">
+                    السعر
                   </p>
-                  <p className="mt-2 text-cream/95">
-                    {offer.recommendedBundle.bonus}
+                  <p
+                    className="tabular display-hero mt-3 text-[40px] leading-none text-cream md:text-[48px]"
+                    dir="ltr"
+                    style={{ textAlign: "right" }}
+                  >
+                    {offer.recommendedBundle.priceMain}
                   </p>
+                  <p className="mt-3 text-sm leading-relaxed text-cream/85">
+                    {offer.recommendedBundle.priceNote}
+                  </p>
+
+                  <Link
+                    href="/contact"
+                    className="btn btn-on-navy mt-7 w-full"
+                  >
+                    {offer.ctaPrimary}
+                    <Icon name="arrow" size={16} style={{ transform: "scaleX(-1)" }} aria-hidden />
+                  </Link>
+                  <Link
+                    href="/pricing"
+                    className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-cream/35 px-6 py-3 text-sm text-cream/90 transition hover:border-green-glow hover:text-green-glow"
+                  >
+                    أو خصّص باقة أخرى
+                  </Link>
                 </div>
               </div>
-
-              <div className="rounded-2xl border border-cream/30 bg-cream/5 p-6 md:col-span-2">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-green-light">
-                  السعر
-                </p>
-                <p
-                  className="tabular mt-3 text-[40px] font-black leading-none text-cream md:text-[44px]"
-                  dir="ltr"
-                  style={{ textAlign: "right" }}
-                >
-                  {offer.recommendedBundle.priceMain}
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-cream/90">
-                  {offer.recommendedBundle.priceNote}
-                </p>
-
-                <Link
-                  href="/contact"
-                  className="btn btn-on-navy mt-6 w-full"
-                >
-                  {offer.ctaPrimary}
-                  <Icon name="arrow" size={16} style={{ transform: "scaleX(-1)" }} aria-hidden />
-                </Link>
-                <Link
-                  href="/pricing"
-                  className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-cream/40 px-6 py-3 text-sm text-cream/90 transition hover:border-green-light hover:text-green-light"
-                >
-                  أو خصّص باقة أخرى
-                </Link>
-              </div>
-            </div>
-          </article>
+            </article>
+          </ScrollReveal>
         </div>
       </section>
 
-      <section className="bg-cream py-20 md:py-28">
-        <div className="mx-auto max-w-5xl px-5 md:px-8">
-          <SectionHeader
-            eyebrow="أمثلة"
-            title="أمثلة ممّا نبنيه لكلّ قطاع"
-          />
-          <div className="mt-12 grid gap-4 md:grid-cols-2">
-            {offer.examples.map((ex) => (
-              <article
-                key={ex.sector}
-                className="card-soft is-hoverable p-6"
-              >
-                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-green-ink">
-                  {ex.sector}
-                </p>
-                <p className="mt-2 text-navy/85">{ex.case}</p>
-              </article>
+      {/* Examples */}
+      <section className="bg-cream py-24 md:py-28">
+        <div className="mx-auto max-w-6xl px-5 md:px-8">
+          <ScrollReveal>
+            <Eyebrow>أمثلة فعلية</Eyebrow>
+            <h2 className="display-hero mt-4 max-w-2xl text-[32px] leading-[1.08] text-navy md:text-[48px]">
+              أمثلة ممّا نبنيه{" "}
+              <span className="accent">لكلّ قطاع</span>.
+            </h2>
+          </ScrollReveal>
+          <div className="mt-12 grid gap-5 md:grid-cols-2">
+            {offer.examples.map((ex, i) => (
+              <ScrollReveal key={ex.sector} delay={((i % 2) + 1) as 1 | 2}>
+                <article className="card-soft is-hoverable p-7">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-green-ink">
+                    {ex.sector}
+                  </p>
+                  <p className="mt-3 text-navy/85">{ex.case}</p>
+                </article>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-mist py-16 md:py-20">
+      {/* Other audiences */}
+      <section className="bg-cream-dark py-20 md:py-24">
         <div className="mx-auto max-w-5xl px-5 md:px-8">
-          <SectionHeader
-            eyebrow="قطاعات أخرى"
-            title="نخدم أيضاً"
-          />
+          <ScrollReveal>
+            <Eyebrow>قطاعات أخرى</Eyebrow>
+            <h2 className="mt-3 text-2xl font-bold text-navy md:text-3xl">
+              نخدم أيضاً
+            </h2>
+          </ScrollReveal>
           <div className="mt-10 grid gap-4 md:grid-cols-2">
-            {otherAudiences.map((a) => (
-              <Link
-                key={a.key}
-                href={a.href}
-                className="card-soft is-hoverable group flex items-center gap-4 p-5"
-              >
-                <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green/10 text-green-ink transition group-hover:bg-green/15">
-                  <Icon name={a.icon} size={22} />
-                </span>
-                <div className="flex-1">
-                  <p className="font-bold text-navy">{a.title}</p>
-                  <p className="text-sm text-navy/70">{a.description}</p>
-                </div>
-                <Icon
-                  name="arrow"
-                  size={18}
-                  className="shrink-0 text-green-ink transition group-hover:text-green"
-                  style={{ transform: "scaleX(-1)" }}
-                />
-              </Link>
+            {otherAudiences.map((a, i) => (
+              <ScrollReveal key={a.key} delay={((i % 2) + 1) as 1 | 2}>
+                <Link
+                  href={a.href}
+                  className="card-soft is-hoverable group flex items-center gap-4 p-6"
+                >
+                  <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green/10 text-green-ink transition group-hover:bg-green/15">
+                    <Icon name={a.icon} size={22} />
+                  </span>
+                  <div className="flex-1">
+                    <p className="font-bold text-navy">{a.title}</p>
+                    <p className="text-sm text-navy/70">{a.description}</p>
+                  </div>
+                  <Icon
+                    name="arrow"
+                    size={18}
+                    className="shrink-0 text-green-ink transition group-hover:text-green"
+                    style={{ transform: "scaleX(-1)" }}
+                  />
+                </Link>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-navy py-20 md:py-28 text-cream">
+      {/* Final CTA */}
+      <section className="night-mesh noise relative isolate overflow-hidden py-28 text-cream md:py-32">
+        <div className="aurora" aria-hidden />
         <div className="relative mx-auto max-w-3xl px-5 text-center md:px-8">
-          <h2 className="text-[32px] font-bold leading-[1.15] text-cream md:text-[48px]">
-            جاهز للبدء؟
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-cream/90">
-            احكي لنا عن جهتك والمشكلة التي تواجهها. نرجع لك بمقترح مخصّص
-            خلال 24 ساعة.
-          </p>
-          <div className="mt-9">
-            <Link href="/contact" className="btn btn-on-navy">
-              {offer.ctaPrimary}
-              <Icon name="arrow" size={16} style={{ transform: "scaleX(-1)" }} aria-hidden />
-            </Link>
-          </div>
+          <ScrollReveal>
+            <Eyebrow tone="light">ابدأ معنا</Eyebrow>
+            <h2 className="display-hero mt-5 text-[40px] leading-[1.05] text-cream md:text-[64px]">
+              جاهز{" "}
+              <span className="accent">للبدء؟</span>
+            </h2>
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-cream/85 md:text-xl">
+              احكي لنا عن جهتك والمشكلة التي تواجهها. نرجع لك بمقترح مخصّص
+              خلال 24 ساعة.
+            </p>
+            <div className="mt-9">
+              <Link href="/contact" className="btn btn-accent">
+                {offer.ctaPrimary}
+                <Icon name="arrow" size={18} style={{ transform: "scaleX(-1)" }} aria-hidden />
+              </Link>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
     </>
