@@ -8,16 +8,6 @@ import ScrollReveal from "./ScrollReveal";
 export default function AudienceTiles() {
   return (
     <section className="relative overflow-hidden bg-cream-dark py-24 md:py-32">
-      {/* Decorative grid lines */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            "linear-gradient(var(--color-navy) 1px, transparent 1px), linear-gradient(90deg, var(--color-navy) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
-        }}
-      />
 
       <div className="relative mx-auto max-w-7xl px-5 md:px-8">
         <ScrollReveal>

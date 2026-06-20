@@ -38,11 +38,12 @@ export default function Header() {
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
-  // Top-of-page: dark-glass with cream text (sits over the cinematic dark hero).
-  // After scroll: cream-glass with navy text (sits over light page sections).
+  // Top-of-page: solid translucent navy (no blur — expensive paint).
+  // After scroll: cream with backdrop-blur (only here, where it actually
+  // sits over light content and benefits from the frosted look).
   const wrapperClass = scrolled
     ? "bg-cream/85 backdrop-blur-md border-b border-ash/50"
-    : "bg-navy-deep/40 backdrop-blur-md border-b border-cream/10";
+    : "bg-navy-deep/55 border-b border-cream/10";
 
   const linkTextDefault = scrolled
     ? "text-navy/85 hover:text-green-ink"

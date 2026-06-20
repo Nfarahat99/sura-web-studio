@@ -30,39 +30,53 @@ export default function CinematicHero() {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // Stop attaching parallax once the hero is out of view — pointless cost.
+    const root = document.querySelector('[aria-label="مقدمة الموقع"]');
+    let inView = true;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) inView = e.isIntersecting;
+      },
+      { threshold: 0 }
+    );
+    if (root) io.observe(root);
+
     let raf = 0;
     const state = { sy: window.scrollY, mx: 0, my: 0 };
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
 
     const apply = () => {
+      raf = 0;
+      if (!inView) return;
       const back = layerBack.current;
       const mid = layerMid.current;
-      const front = layerFront.current;
       const g = glyph.current;
       const sy = state.sy;
-      if (back) back.style.transform = `translate3d(${state.mx * -6}px, ${sy * 0.18 + state.my * -4}px, 0)`;
-      if (mid)  mid.style.transform  = `translate3d(${state.mx * -10}px, ${sy * 0.08 + state.my * -6}px, 0)`;
-      if (front)front.style.transform= `translate3d(${state.mx * 14}px, ${sy * -0.04 + state.my * 8}px, 0)`;
-      if (g)    g.style.transform    = `translate3d(${state.mx * 22}px, ${sy * -0.1 + state.my * 12}px, 0) rotate(${state.mx * 0.6}deg)`;
+      // Only TWO layers updated per frame instead of four — cuts paint cost.
+      if (back) back.style.transform = `translate3d(${state.mx * -6}px, ${sy * 0.15 + state.my * -3}px, 0)`;
+      if (mid)  mid.style.transform  = `translate3d(${state.mx * -8}px, ${sy * 0.06 + state.my * -4}px, 0)`;
+      if (g)    g.style.transform    = `translate3d(${state.mx * 18}px, ${sy * -0.08}px, 0)`;
     };
 
     const onScroll = () => {
       state.sy = window.scrollY;
-      if (!raf) raf = requestAnimationFrame(() => { raf = 0; apply(); });
+      if (!raf) raf = requestAnimationFrame(apply);
     };
     const onMove = (e: PointerEvent) => {
-      if (window.matchMedia("(pointer: coarse)").matches) return;
+      if (coarse) return;
       const w = window.innerWidth;
       const h = window.innerHeight;
-      state.mx = (e.clientX / w - 0.5) * 2;   // -1..1
+      state.mx = (e.clientX / w - 0.5) * 2;
       state.my = (e.clientY / h - 0.5) * 2;
-      if (!raf) raf = requestAnimationFrame(() => { raf = 0; apply(); });
+      if (!raf) raf = requestAnimationFrame(apply);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("pointermove", onMove, { passive: true });
+    if (!coarse) window.addEventListener("pointermove", onMove, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onMove);
+      io.disconnect();
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);

@@ -25,9 +25,10 @@ type Props = {
  */
 export default function JourneySteps({ steps }: Props) {
   const [active, setActive] = useState(0);
-  const [progress, setProgress] = useState(0);
   const refs = useRef<(HTMLLIElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const progressBarRef = useRef<HTMLSpanElement | null>(null);
+  const progressLabelRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -45,14 +46,18 @@ export default function JourneySteps({ steps }: Props) {
     return () => io.disconnect();
   }, []);
 
+  // Scroll progress: write directly to DOM via refs — no setState, no
+  // re-renders. Updates a CSS scale transform + text label inside rAF.
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setProgress(100);
+      if (progressBarRef.current) progressBarRef.current.style.transform = "scaleX(1)";
+      if (progressLabelRef.current) progressLabelRef.current.textContent = "100%";
       return;
     }
     let raf = 0;
-    const onScroll = () => {
+    const apply = () => {
+      raf = 0;
       const el = containerRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
@@ -60,7 +65,15 @@ export default function JourneySteps({ steps }: Props) {
       if (total <= 0) return;
       const passed = Math.min(Math.max(-rect.top, 0), total);
       const pct = (passed / total) * 100;
-      if (!raf) raf = requestAnimationFrame(() => { raf = 0; setProgress(pct); });
+      if (progressBarRef.current) {
+        progressBarRef.current.style.transform = `scaleX(${pct / 100})`;
+      }
+      if (progressLabelRef.current) {
+        progressLabelRef.current.textContent = `${Math.round(pct)}%`;
+      }
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(apply);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -78,11 +91,12 @@ export default function JourneySteps({ steps }: Props) {
       <div className="hidden lg:col-span-5 lg:block">
         <div className="sticky top-32">
           <div className="card-anchor relative overflow-hidden p-10">
-            {/* Scroll progress bar — top edge */}
+            {/* Scroll progress bar — top edge. Updated via ref, no re-renders. */}
             <span
+              ref={progressBarRef}
               aria-hidden
-              className="absolute inset-x-0 top-0 h-[3px] origin-left bg-green-glow transition-[transform] duration-200 ease-out"
-              style={{ transform: `scaleX(${progress / 100})` }}
+              className="absolute inset-x-0 top-0 h-[3px] origin-left bg-green-glow"
+              style={{ transform: "scaleX(0)", willChange: "transform" }}
             />
             <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-green-glow">
               الخطوة {String(active + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
@@ -110,8 +124,11 @@ export default function JourneySteps({ steps }: Props) {
                   />
                 ))}
               </div>
-              <span className="tabular text-[11px] font-semibold tracking-wider text-cream/60">
-                {Math.round(progress)}%
+              <span
+                ref={progressLabelRef}
+                className="tabular text-[11px] font-semibold tracking-wider text-cream/60"
+              >
+                0%
               </span>
             </div>
           </div>
