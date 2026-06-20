@@ -8,7 +8,7 @@ import TiltCard from "@/components/TiltCard";
 import { SERVICES, JOURNEY_STEPS } from "@/lib/data";
 
 export const metadata = {
-  title: "خدماتنا · سُرَى",
+  title: "خدماتنا",
   description:
     "ما تقدّمه سُرَى: مواقع، تطبيقات ويب، هوية بصرية، حملات Google وMeta، تحسين محركات البحث، وتقارير شهرية.",
 };

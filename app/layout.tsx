@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: "سُرَى · Surā — نُرافقك في الرحلة",
-    template: "%s · سُرَى · Surā",
+    template: "%s — سُرَى",
   },
   description:
     "استوديو متخصّص في تصميم وبرمجة المواقع وتطبيقات الويب — للشركات الصغيرة والجمعيات والمصانع. نُسلّم خلال أسابيع، بالعربية والإنجليزية.",

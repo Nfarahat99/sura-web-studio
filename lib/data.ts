@@ -363,7 +363,7 @@ export const BUNDLE_SCENARIOS = [
     title: "🌱 البداية",
     name: "Starter Bundle",
     description: "أوّل خطوة على الويب — صفحة هبوط، استضافة، وحملة جاهزة.",
-    items: ["باقة Core السنوية"],
+    items: ["باقة ميكرو السنوية"],
     priceList: "4,500",
     priceFinal: "4,500 ريال/سنة",
     saving: null,
@@ -376,7 +376,7 @@ export const BUNDLE_SCENARIOS = [
     name: "Growth Bundle — الأكثر طلباً",
     description:
       "حضور كامل، تحسين محركات البحث، وتقارير شهرية — للجهات التي تبني للنموّ الطويل.",
-    items: ["باقة Core السنوية", "SEO سنوي", "تقارير شهرية"],
+    items: ["باقة ميكرو السنوية", "SEO سنوي", "تقارير شهرية"],
     priceList: "12,150",
     priceFinal: "11,385 ريال/سنة",
     saving: "خصم 10% على الإضافات",
@@ -391,7 +391,7 @@ export const BUNDLE_SCENARIOS = [
     description:
       "هوية، موقع، تحسين محركات بحث، وتقارير — كلّ ما تحتاجه للإطلاق دفعة واحدة.",
     items: [
-      "باقة Core السنوية",
+      "باقة ميكرو السنوية",
       "موقع كامل",
       "هوية بصرية",
       "SEO سنوي",
@@ -475,9 +475,9 @@ export const AUDIENCE_OFFERS: Record<Audience["key"], AudienceOffer> = {
       },
     ],
     recommendedBundle: {
-      name: "🌿 باقة النموّ للشركات الصغيرة",
+      name: "🌿 باقة النموّ — Growth Bundle",
       items: [
-        "باقة Core السنوية: صفحة هبوط، استضافة، دومين، وحملة Google",
+        "باقة ميكرو السنوية: صفحة هبوط، استضافة، دومين، وحملة Google",
         "تحسين محركات بحث سنوي: تقني، على-الصفحة، وتقرير شهري",
         "تقارير وتحليلات سنوية",
         "🎁 إعداد ملف Google Business هدية",

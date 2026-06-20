@@ -2,6 +2,10 @@ import { CONTACT } from "@/lib/data";
 import Icon from "./Icon";
 
 export default function WhatsAppButton() {
+  // Don't render the floating button if no real WhatsApp number is configured —
+  // sending visitors to a fake number is worse than no button.
+  if (CONTACT.whatsappIsPlaceholder) return null;
+
   const number = CONTACT.whatsapp.replace(/[^0-9]/g, "");
   return (
     <a

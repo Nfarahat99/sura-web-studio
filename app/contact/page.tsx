@@ -6,7 +6,7 @@ import TiltCard from "@/components/TiltCard";
 import { CONTACT } from "@/lib/data";
 
 export const metadata = {
-  title: "تواصل معنا · سُرَى",
+  title: "تواصل معنا",
   description:
     "احجز مكالمة استكشاف مجانية، أو راسلنا عبر النموذج أو واتساب.",
 };
@@ -30,15 +30,17 @@ export default function ContactPage() {
               لك بمقترح خلال 24 ساعة.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <a
-                href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex h-12 items-center gap-2 rounded-full border border-cream/30 px-6 text-sm text-cream transition hover:border-green-glow hover:text-green-glow"
-              >
-                <Icon name="whatsapp" size={16} aria-hidden />
-                واتساب
-              </a>
+              {!CONTACT.whatsappIsPlaceholder && (
+                <a
+                  href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-12 items-center gap-2 rounded-full border border-cream/30 px-6 text-sm text-cream transition hover:border-green-glow hover:text-green-glow"
+                >
+                  <Icon name="whatsapp" size={16} aria-hidden />
+                  واتساب
+                </a>
+              )}
               <a
                 href={`mailto:${CONTACT.email}`}
                 className="inline-flex h-12 items-center gap-2 rounded-full border border-cream/30 px-6 text-sm text-cream transition hover:border-green-glow hover:text-green-glow"
@@ -79,24 +81,26 @@ export default function ContactPage() {
                 <Eyebrow>تواصل مباشر</Eyebrow>
                 <h3 className="mt-3 text-xl font-bold text-navy">قنوات سريعة</h3>
                 <ul className="mt-5 flex flex-col gap-3">
-                  <li>
-                    <a
-                      href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex items-center gap-4 rounded-xl border border-ash/60 p-4 transition-all duration-200 hover:border-green hover:bg-green/5"
-                    >
-                      <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-green/10 text-green-ink transition-colors duration-200 group-hover:bg-green/20">
-                        <Icon name="whatsapp" size={22} />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="font-bold text-navy">واتساب · WhatsApp</p>
-                        <p className="tabular text-sm text-navy/70" dir="ltr">
-                          {CONTACT.whatsapp}
-                        </p>
-                      </div>
-                    </a>
-                  </li>
+                  {!CONTACT.whatsappIsPlaceholder && (
+                    <li>
+                      <a
+                        href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center gap-4 rounded-xl border border-ash/60 p-4 transition-all duration-200 hover:border-green hover:bg-green/5"
+                      >
+                        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-green/10 text-green-ink transition-colors duration-200 group-hover:bg-green/20">
+                          <Icon name="whatsapp" size={22} />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="font-bold text-navy">واتساب · WhatsApp</p>
+                          <p className="tabular text-sm text-navy/70" dir="ltr">
+                            {CONTACT.whatsapp}
+                          </p>
+                        </div>
+                      </a>
+                    </li>
+                  )}
                   <li>
                     <a
                       href={`mailto:${CONTACT.email}`}

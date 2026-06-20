@@ -8,7 +8,7 @@ import TiltCard from "@/components/TiltCard";
 import { PRICING_TIERS, ADDONS, BUNDLE_SCENARIOS } from "@/lib/data";
 
 export const metadata = {
-  title: "الباقات والأسعار · سُرَى",
+  title: "الباقات والأسعار",
   description:
     "أسعار واضحة — من باقة ميكرو السنوية إلى تطبيقات الويب الكاملة. خمس باقات، صفر مفاجآت.",
 };

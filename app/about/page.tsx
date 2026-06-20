@@ -7,7 +7,7 @@ import TiltCard from "@/components/TiltCard";
 import { VALUE_PILLARS } from "@/lib/data";
 
 export const metadata = {
-  title: "من نحن · سُرَى",
+  title: "من نحن",
   description: "قصة سُرَى ورسالتها وفريقها — ولماذا نُرافقك في الرحلة.",
 };
 
@@ -155,14 +155,36 @@ export default function AboutPage() {
         <div className="aurora" aria-hidden />
         <div className="relative mx-auto max-w-3xl px-5 md:px-8">
           <ScrollReveal>
-            <div className="text-center">
+            <div className="flex flex-col items-center text-center">
               <Eyebrow tone="light">المؤسس</Eyebrow>
-              <h2 className="display-hero mt-4 text-[36px] leading-[1.05] text-cream md:text-[56px]">
+
+              {/* Portrait — placeholder. Drop real photo at /founder.jpg later. */}
+              <div className="mt-6 inline-flex h-28 w-28 items-center justify-center rounded-full border-2 border-green-glow/35 bg-gradient-to-br from-navy-mid to-navy-deep text-3xl font-bold text-green-glow shadow-[0_12px_36px_rgba(0,0,0,0.4)]">
+                ن.ف
+              </div>
+
+              <h2 className="display-hero mt-6 text-[36px] leading-[1.05] text-cream md:text-[56px]">
                 نور الدين فرحات.
               </h2>
               <p className="mt-3 text-sm text-cream/75">
                 المؤسس والمدير التنفيذي · مهندس برمجيات ومصمّم منتجات
               </p>
+
+              {/* Trust chips — credible context without faking case studies */}
+              <ul className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs">
+                <li className="inline-flex items-center gap-1.5 rounded-full border border-cream/20 bg-cream/5 px-3 py-1.5 text-cream/85">
+                  <Icon name="bolt" size={12} className="text-green-glow" aria-hidden />
+                  10+ سنوات في تطوير الويب
+                </li>
+                <li className="inline-flex items-center gap-1.5 rounded-full border border-cream/20 bg-cream/5 px-3 py-1.5 text-cream/85">
+                  <Icon name="globe" size={12} className="text-green-glow" aria-hidden />
+                  بُني للقطاع الخاص وغير الربحي
+                </li>
+                <li className="inline-flex items-center gap-1.5 rounded-full border border-cream/20 bg-cream/5 px-3 py-1.5 text-cream/85">
+                  <Icon name="building" size={12} className="text-green-glow" aria-hidden />
+                  مقرّ سُرَى · الرياض
+                </li>
+              </ul>
             </div>
 
             <div className="mx-auto mt-10 space-y-5 leading-[1.95] text-cream/90 md:text-lg">

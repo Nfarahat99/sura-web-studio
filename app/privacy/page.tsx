@@ -2,7 +2,7 @@ import Eyebrow from "@/components/Eyebrow";
 import ScrollReveal from "@/components/ScrollReveal";
 
 export const metadata = {
-  title: "سياسة الخصوصية · سُرَى",
+  title: "سياسة الخصوصية",
   description: "كيف نتعامل مع بياناتك في سُرَى.",
 };
 

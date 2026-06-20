@@ -24,7 +24,7 @@ export async function generateMetadata({
     return { title: "غير موجود · سُرَى" };
   }
   return {
-    title: `${offer.title} · سُرَى`,
+    title: offer.title,
     description: offer.heroDescription,
   };
 }

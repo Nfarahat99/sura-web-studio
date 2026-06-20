@@ -39,15 +39,17 @@ export default function Footer() {
               احجز مكالمة استكشاف
               <Icon name="arrow" size={16} style={{ transform: "scaleX(-1)" }} aria-hidden />
             </Link>
-            <a
-              href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, "")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-[3.25rem] items-center gap-2 rounded-full border border-cream/30 px-7 text-cream transition hover:border-green-glow hover:text-green-glow"
-            >
-              <Icon name="whatsapp" size={18} aria-hidden />
-              راسلنا على واتساب
-            </a>
+            {!CONTACT.whatsappIsPlaceholder && (
+              <a
+                href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-[3.25rem] items-center gap-2 rounded-full border border-cream/30 px-7 text-cream transition hover:border-green-glow hover:text-green-glow"
+              >
+                <Icon name="whatsapp" size={18} aria-hidden />
+                راسلنا على واتساب
+              </a>
+            )}
           </div>
         </div>
 
@@ -98,19 +100,21 @@ export default function Footer() {
               تواصل
             </h4>
             <ul className="flex flex-col gap-4 text-cream/85">
-              <li>
-                <a
-                  href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, "")}`}
-                  className="inline-flex items-center gap-3 transition-colors duration-200 hover:text-green-glow"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cream/20">
-                    <Icon name="whatsapp" size={16} aria-hidden />
-                  </span>
-                  <span>واتساب · WhatsApp</span>
-                </a>
-              </li>
+              {!CONTACT.whatsappIsPlaceholder && (
+                <li>
+                  <a
+                    href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, "")}`}
+                    className="inline-flex items-center gap-3 transition-colors duration-200 hover:text-green-glow"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-cream/20">
+                      <Icon name="whatsapp" size={16} aria-hidden />
+                    </span>
+                    <span>واتساب · WhatsApp</span>
+                  </a>
+                </li>
+              )}
               <li>
                 <a
                   href={`mailto:${CONTACT.email}`}

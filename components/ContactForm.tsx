@@ -4,15 +4,19 @@ import { useState } from "react";
 import Icon from "./Icon";
 import { CONTACT, whatsappLink } from "@/lib/data";
 
+// Hide WhatsApp follow-up CTAs if the configured number is the placeholder.
+const HAS_WA = !CONTACT.whatsappIsPlaceholder;
+
 type Status = "idle" | "submitting" | "success" | "error";
 
+/**
+ * Simplified to 3 top-level intents (Hick's Law).
+ * Detailed tier picked together in the discovery call.
+ */
 const TIER_OPTIONS = [
-  { value: "micro", label: "ميكرو", hint: "4,500 ريال/سنة" },
-  { value: "launch", label: "Launch", hint: "9,500 – 18,750 ريال" },
-  { value: "build", label: "Build", hint: "22,500 – 45,000 ريال" },
-  { value: "app", label: "App", hint: "56,000 – 131,000 ريال" },
-  { value: "retainer", label: "Retainer", hint: "13,125 ريال/شهر" },
-  { value: "unsure", label: "ما زلت أفكّر", hint: "أحتاج استشارة" },
+  { value: "marketing", label: "موقع تسويقي", hint: "صفحة هبوط أو موقع كامل" },
+  { value: "app", label: "تطبيق ويب", hint: "لوحة تحكم أو بوّابة" },
+  { value: "unsure", label: "غير متأكّد", hint: "أحتاج مكالمة استكشاف" },
 ];
 
 export default function ContactForm() {
@@ -53,13 +57,17 @@ export default function ContactForm() {
         setErrorMessage(
           data?.error === "rate_limited"
             ? "أرسلت طلبات كثيرة بسرعة. انتظر دقيقة وأعد المحاولة."
-            : "صار خطأ ما توقعناه. أعد المحاولة، أو راسلنا مباشرة على واتساب."
+            : HAS_WA
+            ? "صار خطأ ما توقعناه. أعد المحاولة، أو راسلنا مباشرة على واتساب."
+            : "صار خطأ ما توقعناه. أعد المحاولة، أو راسلنا على البريد."
         );
       }
     } catch {
       setStatus("error");
       setErrorMessage(
-        "ما وصلنا للخادم. تحقّق من اتصالك بالإنترنت، أو راسلنا على واتساب."
+        HAS_WA
+          ? "ما وصلنا للخادم. تحقّق من اتصالك بالإنترنت، أو راسلنا على واتساب."
+          : "ما وصلنا للخادم. تحقّق من اتصالك بالإنترنت، أو راسلنا على البريد."
       );
     }
   }
@@ -79,15 +87,17 @@ export default function ContactForm() {
           نرجع لك خلال 24 ساعة على البريد أو واتساب — أيّهما أسرع.
         </p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-          <a
-            href={whatsappLink("السلام عليكم، أرسلت طلباً عبر نموذج موقع سُرَى.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-green px-5 py-2.5 text-sm text-cream transition hover:bg-green-light"
-          >
-            <Icon name="whatsapp" size={16} />
-            تابع عبر واتساب
-          </a>
+          {HAS_WA && (
+            <a
+              href={whatsappLink("السلام عليكم، أرسلت طلباً عبر نموذج موقع سُرَى.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full bg-green px-5 py-2.5 text-sm text-cream transition hover:bg-green-light"
+            >
+              <Icon name="whatsapp" size={16} />
+              تابع عبر واتساب
+            </a>
+          )}
           <a
             href={`mailto:${CONTACT.email}`}
             className="inline-flex items-center gap-2 rounded-full border-2 border-navy/30 bg-white px-5 py-2.5 text-sm text-navy transition hover:border-green hover:text-green-ink"
@@ -176,13 +186,13 @@ export default function ContactForm() {
           الباقة التي تهمّك
         </legend>
         <input type="hidden" name="package" value={selectedTier} />
-        <div role="radiogroup" className="grid grid-cols-2 gap-2.5 md:grid-cols-3">
+        <div role="radiogroup" className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
           {TIER_OPTIONS.map((opt) => {
             const selected = selectedTier === opt.value;
             return (
               <label
                 key={opt.value}
-                className={`cursor-pointer rounded-xl border p-3.5 text-sm transition-colors duration-150 ${
+                className={`cursor-pointer rounded-xl border p-4 text-sm transition-colors duration-150 ${
                   selected ? "border-green bg-green/5" : "border-ash bg-white hover:border-green/40"
                 }`}
               >
@@ -200,6 +210,9 @@ export default function ContactForm() {
             );
           })}
         </div>
+        <p className="mt-2 text-xs text-navy/65">
+          نُحدّد الباقة المناسبة معك في مكالمة الاستكشاف.
+        </p>
       </fieldset>
 
       <div>

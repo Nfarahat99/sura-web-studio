@@ -7,7 +7,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import TiltCard from "@/components/TiltCard";
 
 export const metadata = {
-  title: "أعمالنا · سُرَى",
+  title: "أعمالنا",
   description: "دراسات حالة عملائنا — قريباً.",
 };
 
