@@ -2,11 +2,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { CONTACT, NAV_LINKS } from "@/lib/data";
 import Icon from "./Icon";
+import WaveGlyph from "./WaveGlyph";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-ash/70 bg-navy text-cream">
-      <div className="mx-auto max-w-7xl px-6 py-14">
+    <footer className="relative overflow-hidden border-t border-ash/70 bg-navy text-cream">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-12 -bottom-20 text-cream"
+        style={{ opacity: 0.04 }}
+      >
+        <WaveGlyph size={220} showDot={false} />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-5 py-14 md:px-8">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <Image
@@ -16,12 +25,13 @@ export default function Footer() {
               height={48}
               className="h-12 w-auto"
             />
-            <p className="mt-5 max-w-md leading-relaxed text-cream/80">
-              استوديو بوتيكي لتصميم وتطوير المواقع وتطبيقات الويب.
-              للشركات الصغيرة والجمعيات والمصانع التي تبدأ رحلتها.
+            <p className="mt-5 max-w-md leading-relaxed text-cream/85">
+              استوديو متخصّص في تصميم وبرمجة المواقع وتطبيقات الويب —
+              للشركات الصغيرة والجمعيات والمصانع التي تخطو خطوتها الأولى
+              على الويب.
             </p>
             <p
-              className="mt-4 text-xs font-medium uppercase tracking-[0.18em] text-cream/75"
+              className="mt-4 text-xs font-medium uppercase tracking-[0.18em] text-cream/80"
               dir="ltr"
             >
               Web Design &amp; Web Application Studio · SMEs · Charities · Manufacturers
@@ -37,7 +47,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-cream/80 transition-colors duration-200 hover:text-green-light"
+                    className="text-cream/85 transition-colors duration-200 hover:text-green-light"
                   >
                     {link.label}
                   </Link>
@@ -50,7 +60,7 @@ export default function Footer() {
             <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-green-light">
               تواصل
             </h3>
-            <ul className="flex flex-col gap-3 text-cream/80">
+            <ul className="flex flex-col gap-3 text-cream/85">
               <li>
                 <a
                   href={`https://wa.me/${CONTACT.whatsapp.replace(/[^0-9]/g, "")}`}
@@ -72,7 +82,7 @@ export default function Footer() {
                   <span>{CONTACT.email}</span>
                 </a>
               </li>
-              <li className="inline-flex items-center gap-2 text-cream/75" dir="ltr">
+              <li className="inline-flex items-center gap-2 text-cream/80" dir="ltr">
                 <Icon name="globe" size={18} aria-hidden />
                 <span>{CONTACT.domain}</span>
               </li>
@@ -80,13 +90,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-cream/15 pt-6 text-sm text-cream/75 md:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-cream/40 pt-6 text-sm text-cream/80 md:flex-row">
           <p>
-            © <span className="tabular">{new Date().getFullYear()}</span> سُرَى ·
-            Surā — جميع الحقوق محفوظة
+            © <span className="tabular">2026</span> سُرَى · Surā — جميع الحقوق محفوظة
           </p>
           <p className="inline-flex items-center gap-1.5">
-            صُنع بفخر في الشرق الأوسط
+            صُنع في الرياض بكلّ فخر
             <Icon name="leaf" size={14} className="text-green-light" aria-hidden />
           </p>
         </div>

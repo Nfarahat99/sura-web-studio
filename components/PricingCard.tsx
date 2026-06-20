@@ -1,32 +1,16 @@
 import Link from "next/link";
 import Icon from "./Icon";
+import type { PricingTier } from "@/lib/data";
 
-type Tier = {
-  key: string;
-  name: string;
-  nameEn: string;
-  badge: string | null;
-  description: string;
-  priceMain: string;
-  currency: string;
-  note: string;
-  features: string[];
-  cta: string;
-  highlight: boolean;
-};
-
-export default function PricingCard({ tier }: { tier: Tier }) {
+export default function PricingCard({ tier }: { tier: PricingTier }) {
   const isHighlight = tier.highlight;
+  const base = isHighlight ? "card-anchor" : "card-soft is-hoverable";
   return (
     <article
-      className={`relative hover-lift flex h-full flex-col rounded-2xl p-7 shadow-soft hover:-translate-y-1 hover:shadow-lift ${
-        isHighlight
-          ? "border-2 border-green bg-navy text-cream ring-1 ring-green/40 ring-offset-2 ring-offset-cream"
-          : "border border-ash/60 bg-white"
-      }`}
+      className={`${base} relative flex h-full flex-col p-7 md:p-9`}
     >
       {isHighlight && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-green px-3 py-1 text-xs font-bold text-cream shadow-soft">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-green px-3 py-1 text-xs font-semibold text-cream shadow-soft">
           الأكثر طلباً
         </span>
       )}
@@ -34,15 +18,15 @@ export default function PricingCard({ tier }: { tier: Tier }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3
-            className={`text-2xl font-bold ${
+            className={`text-[22px] font-bold leading-tight md:text-[26px] ${
               isHighlight ? "text-cream" : "text-navy"
             }`}
           >
             {tier.name}
           </h3>
           <p
-            className={`text-xs font-medium uppercase tracking-wider ${
-              isHighlight ? "text-cream/80" : "text-stone"
+            className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${
+              isHighlight ? "text-cream/80" : "text-navy/65"
             }`}
             dir="ltr"
           >
@@ -53,7 +37,7 @@ export default function PricingCard({ tier }: { tier: Tier }) {
           <span
             className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
               isHighlight
-                ? "bg-green text-cream"
+                ? "bg-green-light/15 text-green-light"
                 : "bg-green/12 text-green-ink"
             }`}
           >
@@ -63,13 +47,21 @@ export default function PricingCard({ tier }: { tier: Tier }) {
         )}
       </div>
 
-      <p className={`mt-3 text-sm leading-relaxed ${isHighlight ? "text-cream/85" : "text-navy/75"}`}>
+      <p
+        className={`mt-3 text-sm leading-relaxed ${
+          isHighlight ? "text-cream/90" : "text-navy/80"
+        }`}
+      >
         {tier.description}
       </p>
 
-      <div className={`mt-6 border-t pt-6 ${isHighlight ? "border-cream/15" : "border-ash/50"}`}>
+      <div
+        className={`mt-6 border-t pt-6 ${
+          isHighlight ? "border-cream/40" : "border-ash/50"
+        }`}
+      >
         <p
-          className={`tabular text-3xl font-bold ${
+          className={`tabular text-[44px] font-black leading-none md:text-[52px] ${
             isHighlight ? "text-cream" : "text-navy"
           }`}
           dir="ltr"
@@ -78,8 +70,8 @@ export default function PricingCard({ tier }: { tier: Tier }) {
           {tier.priceMain}
         </p>
         <p
-          className={`mt-1 text-sm ${
-            isHighlight ? "text-cream/85" : "text-navy/65"
+          className={`mt-2 text-sm ${
+            isHighlight ? "text-cream/85" : "text-navy/70"
           }`}
         >
           {tier.currency}
@@ -100,10 +92,12 @@ export default function PricingCard({ tier }: { tier: Tier }) {
             <Icon
               name="check"
               size={16}
-              className={`mt-0.5 shrink-0 ${isHighlight ? "text-green-light" : "text-green"}`}
+              className={`mt-0.5 shrink-0 ${
+                isHighlight ? "text-green-light" : "text-green"
+              }`}
               aria-hidden
             />
-            <span className={isHighlight ? "text-cream/90" : "text-navy/85"}>
+            <span className={isHighlight ? "text-cream/95" : "text-navy/90"}>
               {f}
             </span>
           </li>
@@ -113,10 +107,8 @@ export default function PricingCard({ tier }: { tier: Tier }) {
       <Link
         href="/contact"
         aria-label={`${tier.cta} — باقة ${tier.name}`}
-        className={`mt-7 inline-flex items-center justify-center rounded-full px-5 py-3 font-medium transition-all duration-200 active:scale-[0.98] ${
-          isHighlight
-            ? "bg-green text-cream hover:bg-green-light"
-            : "border-2 border-navy/25 bg-white text-navy hover:border-green hover:bg-green hover:text-cream"
+        className={`btn mt-7 ${
+          isHighlight ? "btn-on-navy" : "btn-secondary"
         }`}
       >
         {tier.cta}

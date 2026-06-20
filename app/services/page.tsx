@@ -1,43 +1,92 @@
 import Link from "next/link";
 import ServiceCard from "@/components/ServiceCard";
 import Icon from "@/components/Icon";
+import SectionHeader from "@/components/SectionHeader";
+import Eyebrow from "@/components/Eyebrow";
+import HorizonDivider from "@/components/HorizonDivider";
+import ProcessTimeline, { type ProcessStep } from "@/components/ProcessTimeline";
 import { SERVICES } from "@/lib/data";
 
 export const metadata = {
-  title: "خدماتنا — سُرَى",
-  description: "كل ما تقدّمه سُرَى: مواقع، تطبيقات ويب، هوية بصرية، حملات تسويقية، SEO، وتقارير.",
+  title: "خدماتنا · سُرَى",
+  description:
+    "ما تقدّمه سُرَى: مواقع، تطبيقات ويب، هوية بصرية، حملات Google وMeta، تحسين محركات البحث، وتقارير شهرية.",
 };
 
-const PROCESS = [
-  { n: "01", t: "مكالمة استكشاف", d: "30-45 دقيقة — تشخيص المشكلة، تأهيل الميزانية، الاتفاق على الخطوة التالية." },
-  { n: "02", t: "مقترح خلال 24 ساعة", d: "نطاق ثابت + جدول زمني + سعر واحد. لا فواتير مفاجئة." },
-  { n: "03", t: "عقد + دفعة 50%", d: "اتفاقية بسيطة. ندخل العمل اليوم نفسه." },
-  { n: "04", t: "بناء متابع يومياً", d: "نشر staging يومي عبر Vercel — تراقب التقدّم لحظة بلحظة." },
-  { n: "05", t: "إطلاق + تدريب", d: "نقل DNS، تدريب فريقك، ضمان 14 يوم بعد الإطلاق." },
-  { n: "06", t: "متابعة الأسبوع الثاني", d: "نتأكد أنّ كل شي يعمل. نعرض عقد صيانة إن كان مناسباً." },
+const PROCESS: ProcessStep[] = [
+  {
+    n: "01",
+    title: "مكالمة استكشاف",
+    duration: "30 إلى 45 دقيقة",
+    description:
+      "نفهم المشكلة، نتفاهم على الميزانية، نتّفق على الخطوة التالية.",
+  },
+  {
+    n: "02",
+    title: "مقترح خلال 24 ساعة",
+    duration: "نطاق ثابت، جدول زمني، سعر واحد",
+    description: "لا فواتير مفاجئة.",
+  },
+  {
+    n: "03",
+    title: "عقد ودفعة 50%",
+    duration: "نباشر في نفس اليوم",
+    description: "اتفاقية واضحة، نباشر العمل في نفس اليوم.",
+  },
+  {
+    n: "04",
+    title: "بناء تتابعه يومياً",
+    duration: "نسخة معاينة كلّ يوم",
+    description:
+      "نسخة معاينة جديدة كلّ يوم على Vercel — تشوف التقدّم بعينك.",
+  },
+  {
+    n: "05",
+    title: "إطلاق وتدريب",
+    duration: "نقل الدومين وضمان 14 يوم",
+    description: "ننقل الدومين، ندرّب فريقك، ضمان 14 يوم بعد الإطلاق.",
+  },
+  {
+    n: "06",
+    title: "متابعة بعد أسبوعين",
+    duration: "تأكّد كامل",
+    description:
+      "نتأكّد إنّ كلّ شي يشتغل، ونعرض عليك عقد صيانة لو احتجته.",
+  },
+];
+
+const NOT_IN_SCOPE = [
+  "مواقع عقارية ومنصّات إعلانات مبوّبة",
+  "تطبيقات الجوّال الأصلية (iOS/Android)",
+  "متاجر إلكترونية معقّدة بـ Shopify/Salla",
+  "مشاريع بميزانية أقلّ من 4,500 ريال",
 ];
 
 export default function ServicesPage() {
   return (
     <>
-      <section className="bg-cream py-20">
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <p className="text-sm font-medium uppercase tracking-[0.18em] text-green-ink">
-            خدماتنا
-          </p>
-          <h1 className="mt-4 text-[2.5rem] font-black leading-[1.15] text-navy sm:text-5xl md:text-6xl">
+      <section className="dawn-glow bg-cream pt-20 pb-16 md:pt-28 md:pb-20">
+        <div className="mx-auto max-w-3xl px-5 text-center md:px-8">
+          <Eyebrow>خدماتنا</Eyebrow>
+          <h1 className="mt-4 text-[32px] font-display font-bold leading-[1.15] text-navy tracking-[-0.01em] md:text-[56px] md:leading-[1.08]">
             ست خدمات. شراكة واحدة.
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-[1.85] text-navy/80 sm:text-lg">
-            تختار ما تحتاجه فقط، أو تتركنا نقترح المزيج المناسب لجهتك. أسعار شفّافة،
-            نطاق ثابت، إطلاق خلال أسابيع.
+          <p className="mx-auto mt-6 max-w-2xl text-[17px] leading-[1.75] text-navy/85 md:text-[18px]">
+            تختار ما تحتاجه، أو نقترح عليك المزيج الأنسب لجهتك. أسعار
+            واضحة، نطاق ثابت، إطلاق خلال أسابيع.
           </p>
+          <div className="mt-8">
+            <Link href="/contact" className="btn btn-primary">
+              ابدأ مشروعك
+              <Icon name="arrow" size={16} style={{ transform: "scaleX(-1)" }} aria-hidden />
+            </Link>
+          </div>
         </div>
       </section>
 
-      <section className="border-y border-ash/40 bg-mist py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <section className="bg-mist py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-5 md:px-8">
+          <div className="grid gap-6 md:grid-cols-2">
             {SERVICES.map((s) => (
               <ServiceCard key={s.title} service={s} />
             ))}
@@ -45,58 +94,54 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="bg-cream py-20">
-        <div className="mx-auto max-w-4xl px-6">
-          <div className="mb-10 text-center">
-            <p className="text-sm font-medium uppercase tracking-[0.18em] text-green-ink">
-              عمليتنا
-            </p>
-            <h2 className="mt-3 text-3xl font-bold text-navy sm:text-4xl md:text-5xl">
-              من المكالمة إلى الإطلاق
-            </h2>
-          </div>
+      <HorizonDivider />
 
-          <ol className="relative flex flex-col gap-4">
-            {/* Vertical timeline rail (RTL-safe via inset) */}
-            <span
-              aria-hidden
-              className="absolute inset-y-2 right-[34px] hidden w-px bg-gradient-to-b from-green/40 via-green/20 to-transparent sm:block"
-            />
-            {PROCESS.map((step) => (
-              <li
-                key={step.n}
-                className="relative flex items-start gap-5 rounded-2xl border border-ash/50 bg-white p-6 shadow-soft transition-all duration-200 hover:border-green/40 hover:shadow-lift"
-              >
-                <span
-                  className="tabular font-mono inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-green/30 bg-green/10 text-base font-bold text-green-ink"
-                  dir="ltr"
-                  aria-label={`الخطوة ${step.n}`}
-                >
-                  {step.n}
-                </span>
-                <div>
-                  <h3 className="text-lg font-bold text-navy sm:text-xl">{step.t}</h3>
-                  <p className="mt-1 text-navy/75">{step.d}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+      <section className="bg-cream py-20 md:py-28">
+        <div className="mx-auto max-w-4xl px-5 md:px-8">
+          <SectionHeader
+            eyebrow="كيف نشتغل"
+            title="من المكالمة إلى الإطلاق"
+          />
+          <div className="mt-12 md:mt-16">
+            <ProcessTimeline steps={PROCESS} orientation="vertical" />
+          </div>
         </div>
       </section>
 
-      <section className="bg-navy py-20 text-cream">
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <h2 className="text-3xl font-bold text-cream sm:text-4xl md:text-5xl">
-            عندك مشروع في ذهنك؟
+      <section className="bg-mist py-20 md:py-28">
+        <div className="mx-auto max-w-3xl px-5 md:px-8">
+          <SectionHeader
+            eyebrow="ما لا نقدّمه"
+            title="نقول لا — لو ما نقدر نُسلّم بإتقان"
+            lede="الصدق فوق التوسّع. هذي المشاريع نحوّلها لشركاء نثق فيهم بدل ما نقبل ونتعثّر."
+          />
+          <ul className="mx-auto mt-10 flex max-w-2xl flex-col gap-3">
+            {NOT_IN_SCOPE.map((item) => (
+              <li
+                key={item}
+                className="card-soft flex items-start gap-3 p-5"
+              >
+                <span
+                  aria-hidden
+                  className="mt-2.5 inline-block h-2 w-2 shrink-0 rounded-full bg-error/80"
+                />
+                <span className="text-navy/90">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="bg-navy py-20 md:py-28 text-cream">
+        <div className="mx-auto max-w-3xl px-5 text-center md:px-8">
+          <h2 className="text-[32px] font-bold leading-[1.15] text-cream md:text-[48px]">
+            عندك مشروع في بالك؟
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-cream/85">
-            احكي لنا عنه. نسمع، نقترح، ونرجع لك بمقترح ملموس.
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-cream/90">
+            احكي لنا عنه. نسمع، نسأل، ونرجع لك بمقترح ملموس.
           </p>
           <div className="mt-9">
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-green px-7 py-3.5 font-medium text-cream transition-all duration-200 hover:bg-green-light active:scale-[0.98]"
-            >
+            <Link href="/contact" className="btn btn-on-navy">
               احكي لنا
               <Icon name="arrow" size={16} style={{ transform: "scaleX(-1)" }} aria-hidden />
             </Link>

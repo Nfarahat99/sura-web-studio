@@ -30,16 +30,21 @@
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
   --radius-card: 14px;
+  --radius-anchor: 18px;
   --radius-pill: 999px;
 
-  --shadow-soft: 0 1px 2px rgba(30,41,64,0.06), 0 4px 16px rgba(30,41,64,0.06);
-  --shadow-lift: 0 10px 30px rgba(30,41,64,0.12);
+  --shadow-soft: 0 1px 2px rgba(30,41,64,0.04), 0 8px 24px rgba(30,41,64,0.05);
+  --shadow-lift: 0 14px 36px rgba(30,41,64,0.12);
+  --shadow-anchor: 0 14px 40px rgba(30,41,64,0.18);
+  --shadow-button: 0 6px 20px rgba(30,41,64,0.18);
+  --shadow-button-hover: 0 10px 28px rgba(30,41,64,0.22);
   --shadow-ring: 0 0 0 3px rgba(91,138,71,0.35);
+
+  --ease-out-quart: cubic-bezier(.2,.7,.2,1);
 }
 
 html {
   scroll-behavior: smooth;
-  /* Prevent iOS auto-zoom on form focus */
   -webkit-text-size-adjust: 100%;
 }
 
@@ -47,27 +52,22 @@ body {
   background: var(--color-cream);
   color: var(--color-navy);
   font-family: var(--font-body);
-  /* Brand spec: Arabic body line-height = 1.75 */
   line-height: 1.75;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* Tabular figures for prices/dates */
   font-feature-settings: "ss01", "cv11";
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 700;
-  /* Arabic display needs slightly more breathing room than Latin */
   line-height: 1.2;
   color: var(--color-navy);
   letter-spacing: -0.005em;
   text-wrap: balance;
 }
 
-p {
-  text-wrap: pretty;
-}
+p { text-wrap: pretty; }
 
 ::selection {
   background: var(--color-green);
@@ -79,14 +79,13 @@ a {
   text-decoration: none;
 }
 
-/* Universal visible focus ring — never invisible for keyboard users */
+/* Universal visible focus ring */
 :focus-visible {
   outline: 2px solid var(--color-green);
   outline-offset: 3px;
   border-radius: 6px;
 }
 
-/* Buttons/links with their own rounded surface get a soft ring instead */
 button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible,
@@ -95,29 +94,50 @@ summary:focus-visible {
   box-shadow: var(--shadow-ring);
 }
 
-/* Tabular numerals for prices, dates, phone numbers */
 .tabular {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-/* ========================================================================
- * Contrast safety net — boost any low-opacity text so it never disappears.
- * Applies even if a component uses a faded utility by accident.
- *
- * Targets WCAG AA Normal (4.5:1). Brand colors:
- *   cream  #F2EEE5 (warm bg)
- *   navy   #1E2940 (primary text + dark sections)
- *   stone  #6B7280 (gray) — only passes AA on white; fails on cream (~3.98:1)
- *
- * Strategy: any low/medium-opacity text utility is force-bumped to a value
- * that passes AA on its intended background. We err high (opaque-ish).
- * ====================================================================== */
+/* =====================================================================
+ * Dawn glow — soft cream-to-green-light radial gradient at the top of
+ * every page. Set as a pseudo-element on <main>. "Morning after launch".
+ * ===================================================================== */
+.dawn-glow {
+  position: relative;
+}
+.dawn-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 480px;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 120% 60% at 50% 0%,
+    color-mix(in oklab, var(--color-green-light) 14%, transparent) 0%,
+    transparent 65%
+  );
+}
+.dawn-glow > * { position: relative; }
 
-/* CRITICAL: Force text-cream to always be cream, regardless of any
- * inherited or transition state. This catches the case where Arabic text
- * on .bg-navy.text-cream buttons was rendering invisible (transition lag,
- * font fallback, currentColor inheritance). */
+/* =====================================================================
+ * Guiding-star pulse — the dot above the hero horizon.
+ * ===================================================================== */
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); opacity: 0.88; }
+  50% { transform: scale(1.18); opacity: 1; }
+}
+.star-pulse {
+  animation: starPulse 2.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* =====================================================================
+ * Contrast safety net — boost any low-opacity text so it never disappears.
+ * Same logic as before, kept verbatim because it does real work.
+ * ===================================================================== */
+
 .text-cream,
 .text-cream\/90,
 .text-cream\/95,
@@ -127,7 +147,6 @@ summary:focus-visible {
   color: var(--color-cream) !important;
 }
 
-/* Cream text on dark bgs: anything below ~90% becomes ~90%. */
 .text-cream\/55,
 .text-cream\/60,
 .text-cream\/65,
@@ -138,7 +157,6 @@ summary:focus-visible {
   color: color-mix(in oklab, var(--color-cream) 92%, transparent) !important;
 }
 
-/* CRITICAL: Force text-navy to always be navy. Same reasoning as text-cream. */
 .text-navy,
 .text-navy\/90,
 .text-navy\/95,
@@ -148,7 +166,6 @@ summary:focus-visible {
   color: var(--color-navy) !important;
 }
 
-/* Navy text on cream/white bgs: anything below ~85% becomes ~88%. */
 .text-navy\/55,
 .text-navy\/60,
 .text-navy\/65,
@@ -159,10 +176,6 @@ summary:focus-visible {
   color: color-mix(in oklab, var(--color-navy) 90%, transparent) !important;
 }
 
-/* Stone text: replace gray-on-cream failure with a darker readable tone.
- * Stone (#6B7280) on cream is ~3.98:1 → FAILS. We force it to navy/70 mix,
- * which still reads as muted but passes 4.5:1 on cream and white.
- * Authors who explicitly want true stone gray can opt in via .text-stone-raw. */
 .text-stone,
 .text-stone\/55,
 .text-stone\/60,
@@ -176,8 +189,6 @@ summary:focus-visible {
   color: var(--color-stone) !important;
 }
 
-/* Placeholders — Tailwind's placeholder: variants don't inherit the bumps
- * above because they target ::placeholder. Force readable placeholder. */
 .placeholder\:text-stone\/70::placeholder,
 .placeholder\:text-stone\/60::placeholder,
 .placeholder\:text-stone::placeholder {
@@ -185,17 +196,12 @@ summary:focus-visible {
   opacity: 1;
 }
 
-/* Green-light (#7BAE5F) is decorative-only on cream (3:1 — fails AA Normal).
- * It is safe on navy/charcoal as eyebrow text. If anyone uses it as TEXT on
- * a cream/white/mist surface, force it to green-ink (#34672A) which passes. */
 .bg-cream .text-green-light:not(svg):not([aria-hidden]),
 .bg-mist  .text-green-light:not(svg):not([aria-hidden]),
 .bg-white .text-green-light:not(svg):not([aria-hidden]) {
   color: var(--color-green-ink) !important;
 }
 
-/* Borders that disappear: cream-border on navy at <30% reads as ~1.3:1
- * (essentially invisible). Bump to ≥40% so outline CTAs are perceivable. */
 .border-cream\/15,
 .border-cream\/20,
 .border-cream\/25,
@@ -203,7 +209,6 @@ summary:focus-visible {
   border-color: color-mix(in oklab, var(--color-cream) 45%, transparent) !important;
 }
 
-/* Ensure all section text inherits a sensible default if the section forgot one */
 section.bg-navy,
 section.bg-charcoal,
 .bg-navy > *:not([class*="text-"]),
@@ -211,34 +216,131 @@ section.bg-charcoal,
   color: var(--color-cream);
 }
 
-/* iOS form-zoom guard — min 16px on inputs */
+/* iOS form-zoom guard */
 input, textarea, select {
   font-size: 16px;
 }
 
-/* Respect safe-area insets for fixed elements */
-.safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-start { padding-inline-start: env(safe-area-inset-left); }
+
+/* =====================================================================
+ * Card archetypes — encoded as utility classes so the markup stays clean.
+ * Soft card = white on cream, hover-lifts. Anchor card = navy, static.
+ * ===================================================================== */
+.card-soft {
+  background: #FFFFFF;
+  border: 1px solid color-mix(in oklab, var(--color-ash) 70%, transparent);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+  transition: transform 220ms var(--ease-out-quart),
+              box-shadow 220ms var(--ease-out-quart),
+              border-color 180ms ease-out;
 }
-.safe-start {
-  padding-inline-start: env(safe-area-inset-left);
+.card-soft.is-hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+  border-color: color-mix(in oklab, var(--color-green) 35%, var(--color-ash));
+}
+.card-anchor {
+  background: var(--color-navy);
+  color: var(--color-cream);
+  border: 1px solid color-mix(in oklab, var(--color-green-light) 30%, var(--color-navy));
+  border-radius: var(--radius-anchor);
+  box-shadow: var(--shadow-anchor);
 }
 
+/* =====================================================================
+ * Button system — implemented as semantic classes for consistency.
+ * Min height 48px; tactile press feedback.
+ * ===================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 3rem;
+  padding-inline: 1.75rem;
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1;
+  transition: transform 200ms ease-out, background-color 200ms ease-out,
+              color 200ms ease-out, box-shadow 200ms ease-out,
+              border-color 200ms ease-out;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(0) scale(0.98); }
+
+.btn-primary {
+  background: var(--color-navy);
+  color: var(--color-cream);
+  box-shadow: var(--shadow-button);
+}
+.btn-primary:hover {
+  background: var(--color-charcoal);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-button-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-navy);
+  border: 1px solid color-mix(in oklab, var(--color-navy) 30%, transparent);
+}
+.btn-secondary:hover {
+  background: var(--color-navy);
+  color: var(--color-cream);
+  border-color: var(--color-navy);
+}
+
+.btn-on-navy {
+  background: var(--color-cream);
+  color: var(--color-navy);
+}
+.btn-on-navy:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  height: auto;
+  padding: 0 0 2px 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-navy);
+  border-bottom: 2px solid var(--color-green);
+}
+.btn-ghost:hover {
+  color: var(--color-green-ink);
+  border-bottom-color: var(--color-green-ink);
+}
+
+/* =====================================================================
+ * Animations — entrance, hover, signature moments.
+ * ===================================================================== */
 @media (prefers-reduced-motion: no-preference) {
-  .fade-up {
-    animation: fadeUp 0.6s ease-out both;
-  }
+  .fade-up { animation: fadeUp 0.6s var(--ease-out-quart) both; }
   .fade-up-delay-1 { animation-delay: 80ms; }
   .fade-up-delay-2 { animation-delay: 160ms; }
   .fade-up-delay-3 { animation-delay: 240ms; }
+  .fade-up-delay-4 { animation-delay: 320ms; }
+  .fade-up-delay-5 { animation-delay: 400ms; }
+  .fade-up-delay-6 { animation-delay: 480ms; }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(14px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* Subtle entrance for cards in grids */
-  .hover-lift { transition: transform 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms cubic-bezier(.2,.7,.2,1), border-color 180ms; }
+  .hover-lift {
+    transition: transform 220ms var(--ease-out-quart),
+                box-shadow 220ms var(--ease-out-quart),
+                border-color 180ms;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -248,4 +350,24 @@ input, textarea, select {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  .star-pulse { animation: none !important; opacity: 1 !important; transform: scale(1) !important; }
+}
+
+/* =====================================================================
+ * Native <details> accordion — clean open/close, no JS.
+ * ===================================================================== */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details[open] .acc-indicator { transform: rotate(45deg); }
+
+/* =====================================================================
+ * RTL-safe: process-timeline rail uses logical inset.
+ * ===================================================================== */
+.timeline-rail {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--color-green) 40%, transparent),
+    color-mix(in oklab, var(--color-green) 20%, transparent),
+    transparent
+  );
 }

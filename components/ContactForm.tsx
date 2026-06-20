@@ -6,9 +6,19 @@ import { CONTACT, whatsappLink } from "@/lib/data";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
+const TIER_OPTIONS = [
+  { value: "micro", label: "ميكرو", hint: "4,500 ريال/سنة" },
+  { value: "launch", label: "Launch", hint: "9,500 – 18,750 ريال" },
+  { value: "build", label: "Build", hint: "22,500 – 45,000 ريال" },
+  { value: "app", label: "App", hint: "56,000 – 131,000 ريال" },
+  { value: "retainer", label: "Retainer", hint: "13,125 ريال/شهر" },
+  { value: "unsure", label: "ما زلت أفكّر", hint: "أحتاج استشارة" },
+];
+
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [selectedTier, setSelectedTier] = useState<string>("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,13 +52,15 @@ export default function ContactForm() {
         setStatus("error");
         setErrorMessage(
           data?.error === "rate_limited"
-            ? "محاولات كثيرة في وقت قصير. حاول بعد دقيقة."
-            : "حصل خطأ غير متوقع. جرّب مرة ثانية أو راسلنا مباشرة."
+            ? "أرسلت طلبات كثيرة بسرعة. انتظر دقيقة وأعد المحاولة."
+            : "صار خطأ ما توقعناه. أعد المحاولة، أو راسلنا مباشرة على واتساب."
         );
       }
     } catch {
       setStatus("error");
-      setErrorMessage("ما قدرنا نتصل بالخادم. تحقّق من الإنترنت أو راسلنا عبر واتساب.");
+      setErrorMessage(
+        "ما وصلنا للخادم. تحقّق من اتصالك بالإنترنت، أو راسلنا على واتساب."
+      );
     }
   }
 
@@ -57,18 +69,18 @@ export default function ContactForm() {
       <div
         role="status"
         aria-live="polite"
-        className="rounded-2xl border border-green/30 bg-green/10 p-8 text-center shadow-soft"
+        className="card-soft p-8 text-center"
       >
         <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full bg-green/20 text-green-ink">
           <Icon name="check" size={32} />
         </div>
-        <h3 className="mt-4 text-2xl font-bold text-navy">شكراً!</h3>
-        <p className="mx-auto mt-2 max-w-md text-navy/75">
-          استلمنا طلبك. نتواصل معك خلال 24 ساعة عبر البريد أو واتساب.
+        <h3 className="mt-4 text-2xl font-bold text-navy">وصلنا طلبك.</h3>
+        <p className="mx-auto mt-2 max-w-md text-navy/80">
+          نرجع لك خلال 24 ساعة على البريد أو واتساب — أيّهما أسرع.
         </p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
           <a
-            href={whatsappLink("مرحباً، أرسلت لتوّي عبر نموذج الموقع.")}
+            href={whatsappLink("السلام عليكم، أرسلت طلباً عبر نموذج موقع سُرَى.")}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-green px-5 py-2.5 text-sm text-cream transition hover:bg-green-light"
@@ -78,7 +90,7 @@ export default function ContactForm() {
           </a>
           <a
             href={`mailto:${CONTACT.email}`}
-            className="inline-flex items-center gap-2 rounded-full border-2 border-navy/30 bg-white px-5 py-2.5 text-sm text-navy transition hover:border-green hover:text-green"
+            className="inline-flex items-center gap-2 rounded-full border-2 border-navy/30 bg-white px-5 py-2.5 text-sm text-navy transition hover:border-green hover:text-green-ink"
           >
             <Icon name="mail" size={16} />
             راسلنا مباشرة
@@ -95,10 +107,9 @@ export default function ContactForm() {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="flex flex-col gap-5 rounded-2xl border border-ash/50 bg-white p-6 shadow-soft sm:p-8"
+      className="card-soft flex flex-col gap-6 p-7 md:p-10"
       aria-busy={status === "submitting"}
     >
-      {/* Honeypot — hidden from real users, visible to bots */}
       <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>
         <label htmlFor="company_website">Company website (leave blank)</label>
         <input
@@ -121,75 +132,79 @@ export default function ContactForm() {
           name="name"
           autoComplete="name"
           className={fieldBase}
-          placeholder="اسمك الكريم"
+          placeholder="اسمك"
         />
       </div>
 
-      <div>
-        <label htmlFor="cf-email" className="mb-1.5 block text-sm font-medium text-navy">
-          البريد الإلكتروني <span className="text-error" aria-hidden>*</span>
-        </label>
-        <input
-          required
-          type="email"
-          id="cf-email"
-          name="email"
-          autoComplete="email"
-          inputMode="email"
-          className={fieldBase}
-          placeholder="name@example.com"
-          dir="ltr"
-        />
-      </div>
+      <div className="grid gap-5 md:grid-cols-2">
+        <div>
+          <label htmlFor="cf-email" className="mb-1.5 block text-sm font-medium text-navy">
+            البريد الإلكتروني <span className="text-error" aria-hidden>*</span>
+          </label>
+          <input
+            required
+            type="email"
+            id="cf-email"
+            name="email"
+            autoComplete="email"
+            inputMode="email"
+            className={fieldBase}
+            placeholder="name@example.com"
+            dir="ltr"
+          />
+        </div>
 
-      <div>
-        <label htmlFor="cf-phone" className="mb-1.5 block text-sm font-medium text-navy">
-          الواتساب <span className="text-stone">(اختياري)</span>
-        </label>
-        <input
-          type="tel"
-          id="cf-phone"
-          name="phone"
-          autoComplete="tel"
-          inputMode="tel"
-          className={fieldBase}
-          placeholder="+966 5X XXX XXXX"
-          dir="ltr"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="cf-package" className="mb-1.5 block text-sm font-medium text-navy">
-          الباقة المهتم بها
-        </label>
-        <div className="relative">
-          <select
-            id="cf-package"
-            name="package"
-            className={`${fieldBase} appearance-none pe-12`}
-          >
-            <option value="">اختر الباقة</option>
-            <option value="micro">سُرَى ميكرو (4,500 ريال/سنة)</option>
-            <option value="launch">Launch (9,500 – 18,750 ريال)</option>
-            <option value="build">Build (22,500 – 45,000 ريال)</option>
-            <option value="app">App (56,000 – 131,000 ريال)</option>
-            <option value="retainer">Retainer (13,125 ريال/شهر)</option>
-            <option value="unsure">لست متأكداً — أحتاج استشارة</option>
-          </select>
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          </span>
+        <div>
+          <label htmlFor="cf-phone" className="mb-1.5 block text-sm font-medium text-navy">
+            الواتساب <span className="text-navy/65">(اختياري)</span>
+          </label>
+          <input
+            type="tel"
+            id="cf-phone"
+            name="phone"
+            autoComplete="tel"
+            inputMode="tel"
+            className={fieldBase}
+            placeholder="+966 5X XXX XXXX"
+            dir="ltr"
+          />
         </div>
       </div>
 
+      <fieldset>
+        <legend className="mb-2 block text-sm font-medium text-navy">
+          الباقة التي تهمّك
+        </legend>
+        <input type="hidden" name="package" value={selectedTier} />
+        <div role="radiogroup" className="grid grid-cols-2 gap-2.5 md:grid-cols-3">
+          {TIER_OPTIONS.map((opt) => {
+            const selected = selectedTier === opt.value;
+            return (
+              <label
+                key={opt.value}
+                className={`cursor-pointer rounded-xl border p-3.5 text-sm transition-colors duration-150 ${
+                  selected ? "border-green bg-green/5" : "border-ash bg-white hover:border-green/40"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="package_choice"
+                  value={opt.value}
+                  checked={selected}
+                  onChange={() => setSelectedTier(opt.value)}
+                  className="sr-only"
+                />
+                <span className="block font-medium text-navy">{opt.label}</span>
+                <span className="mt-1 block text-xs text-navy/70">{opt.hint}</span>
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+
       <div>
         <label htmlFor="cf-message" className="mb-1.5 block text-sm font-medium text-navy">
-          اخبرنا عن مشروعك <span className="text-error" aria-hidden>*</span>
+          احكي لنا عن مشروعك <span className="text-error" aria-hidden>*</span>
         </label>
         <textarea
           required
@@ -197,10 +212,10 @@ export default function ContactForm() {
           name="message"
           rows={5}
           className={`${fieldBase} resize-none`}
-          placeholder="نوع الجهة، الهدف من الموقع، وأي ميزات تطلبها…"
+          placeholder="نوع الجهة، هدفك من الموقع، وأي ميزات تخطر على بالك…"
         />
-        <p className="mt-1.5 text-xs text-stone">
-          كلّما كانت التفاصيل أوضح، كان مقترحنا أدق.
+        <p className="mt-1.5 text-xs text-navy/65">
+          كلّما وضحت التفاصيل، طلع مقترحنا أدقّ.
         </p>
       </div>
 
@@ -216,7 +231,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-navy px-6 py-3.5 font-medium text-cream shadow-soft transition-all duration-200 hover:bg-green hover:shadow-lift active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-60"
       >
         {status === "submitting" ? (
           <>
@@ -228,16 +243,19 @@ export default function ContactForm() {
           </>
         ) : (
           <>
-            أرسل الطلب
+            إرسال الطلب
             <Icon name="arrow" size={16} style={{ transform: "scaleX(-1)" }} />
           </>
         )}
       </button>
 
-      <p className="text-center text-xs text-stone">
-        لا نشارك بياناتك مع أي جهة.{" "}
-        <a className="underline decoration-green/40 underline-offset-2 hover:text-green-ink" href="/privacy">
-          سياسة الخصوصية
+      <p className="text-center text-xs text-navy/70">
+        بياناتك تبقى عندنا.{" "}
+        <a
+          className="underline decoration-green/40 underline-offset-2 hover:text-green-ink"
+          href="/privacy"
+        >
+          اقرأ سياسة الخصوصية.
         </a>
       </p>
     </form>

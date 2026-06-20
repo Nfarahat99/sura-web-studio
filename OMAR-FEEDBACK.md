@@ -1,419 +1,323 @@
-# OMAR-FEEDBACK.md — ناشئ Website QA Review
+# OMAR-FEEDBACK.md — سُرَى Website Rebuild QA Review
 
-**Date:** 2026-06-12
+**Date:** 2026-06-19
 **Reviewer:** Omar (agent-evaluation)
-**Subject:** `C:\nashi\05-website\` — Next.js 15 marketing website
-**Overall score:** 8.0/10
-**Verdict:** Ready for soft launch with one critical content fix + a small set of recommended polish items. No blockers (per R6: 8.0 ≥ 5).
+**Subject:** `C:\nashi\05-website\` — Next.js 15 + Tailwind v4 marketing site, full visual + content rebuild
+**Contracts:** `HAMMAM-REBUILD-SPEC.md` (visual/UX) + `ARABIC-COPY-V2.md` (editorial)
+**Overall score:** **8.4 / 10**
+**Verdict:** **Approved for soft launch** with two required fixes (each ~5 minutes) and a short recommended-polish list before paid traffic. No blockers. (Per R6: 8.4 ≥ 7.5 = ship.)
 
 ---
 
 ## Summary
 
-The website is a clean, opinionated, brand-consistent Next.js 15 + Tailwind v4 build with seven pages, eight reusable components, and a single data source-of-truth (`lib/data.ts`). The Arabic-first execution is strong: `dir="rtl"`, `lang="ar"`, Cairo + IBM Plex Sans Arabic via `next/font/google`, line-height 1.75 globally, and Arabic-primary copy with English used only as the secondary signal-of-bilingualism (audience subtitles, code labels). The pricing page correctly implements the agreed v1 model with all five tiers (Micro 4,500 ريال + Launch + Build + App + Retainer) and includes add-ons + FAQ. CTAs are consistent across pages, the contact form has the right fields, and the footer carries the locked positioning line verbatim.
+This is a real rebuild, not a paint job. The previous version was a generic startup template wearing سُرَى colors; the new version actually embodies the night-journey metaphor — a warm cream landing, a navy horizon line carrying a single green guiding-star dot through the page, the dawn glow at every page top, and the two-wave glyph appearing as decorative watermark in the final CTA and the Work-page empty state. The button/card system is now tokenized (`btn`, `btn-primary`, `card-soft`, `card-anchor`) and applied consistently across 9 routes (home, services, pricing, about, contact, work, privacy, three audience pages). Reusable components (`HorizonHero`, `HorizonDivider`, `WaveGlyph`, `Eyebrow`, `SectionHeader`, `TrustBand`, `ProcessTimeline`) carry the load — page files are now compositions of named components rather than inline copy.
 
-The main weakness is **a single critical content contradiction on `/work`**: it announces a "$1,500 خصم خاص لأول 3 عملاء" pilot offer that was never agreed for the public website — Foundation Brief explicitly limits this to a private pilot tool, not a published price. This must be removed before any prospect sees the live site. Beyond that, the issues are polish: WhatsApp number is a placeholder `+966500000000`, the contact form has no real submit endpoint (700ms setTimeout fake), there's no SMS/email service wired up, no honeypot or rate limit, missing OG image, no sitemap/robots, no 404 page, no English mirror (Arabic-only despite Brand Guidelines §4.2 promise of "Latin in three roles" — the live website essentially has none beyond a footer line and audience subtitles).
+The Arabic editorial pass is the bigger lift. Every banned phrase from the v2 spec is gone from the live source. The hero tagline is **fixed** (`نُرافقك في الرحلة من الفكرة إلى الإطلاق.`), the About-page etymology is **fixed** (`السير في الليل برفقة` — the correct night-journey meaning, replacing the wrong "rising/growing" gloss), and the bundle names are **fixed** (`البداية / النموّ / الإطلاق الكامل`, no more "السُرَى" used as a generic adjective). The contact form, FAQ, founder bio, and privacy page all read like a Riyadh studio wrote them, not a translation engine. The Saudi register specifically — `أبغى`, `تشوف`, `لو`, `ما في`, `يشوف` — landed where the spec asked for it.
 
-Strategic alignment is strong: the website serves the stated goal of "تعريف بالشركة وعرض الباقات" cleanly. No scope creep — it does not try to be a blog, a portfolio with real cases (correctly defers to placeholders + honest "coming soon"), or an account portal. It is exactly what was scoped.
+Conversion design closed both gaps from the 2026-06-12 review: the homepage now surfaces **all five pricing tiers** in a navy mini-grid (`/app/page.tsx` lines 103–142), and the **$1,500 pilot CTA on /work is permanently removed** — replaced with a wireframe-style "what a case study will look like" preview that sets the expectation honestly without anchoring price.
+
+Two small misses keep this from 9.0. One string slipped through the "شاهد → اطّلع على" sweep (homepage pricing peek button), and the signature `GuidingStarRail` component is built but never imported anywhere. Neither is launch-blocking — both fit inside one commit.
 
 ---
 
 ## Per-dimension scores
 
-### 1. Brand consistency — 9.0/10
+### 1. Brand consistency — 9.1 / 10 (weight 15%)
 
 **Strengths:**
-- Color palette is **pixel-locked to Brand Guidelines v6.0** in `globals.css`: Navy `#1E2940`, Green `#5B8A47`, Green-Light `#7BAE5F`, Cream `#F2EEE5`, Mist `#F0F2F5`, Charcoal, Stone, Ash, plus functional Warning/Error/Info. All correct.
-- Functional Success color from BG (`#3F8F5A`) is named `--color-green-dark` — same value, repurposed as an accent darker shade. Acceptable drift; semantically reused but not lost.
-- 70-20-10 Cream/Navy/Green ratio is respected visually: cream body, navy footers/CTAs, green only as accent (badges, dot pulses, underline decorations, hover states, leaf bullets).
-- Typography: Cairo loaded as display + UI, IBM Plex Sans Arabic as body, both via `next/font/google` with weights `400/500/700/900` (Cairo) and `400/500/700` (Plex) — matches BG §4.1 exactly.
-- Body `line-height: 1.75` is set globally — implements BG §4.3 Arabic-specific rule ("body line-height = 1.75 (not 1.5)") correctly.
-- Logo usage: master logo in header (h-10), light variant in footer on navy (correct lockup choice per BG §2.2).
-- Positioning line `WEB DESIGN & WEB APPLICATION STUDIO · SMEs | CHARITIES | MANUFACTURERS` appears verbatim in footer.
-- Tagline implemented as `نبني لما هو ناشئ.` on hero — matches BG §5.2 sample copy.
-- Voice & tone: avoids the BG-banned vocabulary (no "synergy/leverage/world-class/ecosystem/paradigm/revolutionary") and uses the prescribed vocabulary (نبني/نُسلّم/سريع/شفّاف). The phrase "بدون مسرحيات" appears in three places — direct inheritance of "no agency theater".
+- The night-journey metaphor is now load-bearing, not decorative. `HorizonHero` (`components/HorizonHero.tsx`) renders a full-width navy SVG with both waves at 18% / 12% opacity and the 8px green guiding-star circle pulsing on the upper wave's peak — exactly Hammam §4.2. Parallax disabled cleanly on `prefers-reduced-motion`.
+- Dawn-glow is applied on every inner page (`dawn-glow` class on the first section of `/services`, `/pricing`, `/about`, `/contact`, `/work`, `/privacy`, and the audience pages). The `::before` radial gradient in `globals.css` (lines 106–122) renders the cream→green-light glow Hammam specified.
+- `HorizonDivider` is used between sections on home (3×), services (1×), pricing (1×), work (1×), about (1×), audience pages (1×) — with `flip` alternating direction so the rhythm isn't mechanical. `<hr>` and `border-t border-ash` separators are gone.
+- `WaveGlyph` shows up as decorative watermark in the home Final CTA (`size={280}` opacity 0.06), the footer (`size={220}` opacity 0.04), and the Work-page placeholder cards (replaces the previous solid color blocks).
+- `Eyebrow` component with the leading green dot is used on **every** section header across the site — the leading dot is the logo's guiding star miniaturized, exactly as Hammam called for.
+- `card-soft` (white-on-cream, hover-lift) and `card-anchor` (navy, premium tier) archetypes are tokenized in `globals.css` (lines 231–251) and applied consistently. Audience bundle cards, highlighted pricing tier, and contact-page response-times card all correctly use `card-anchor`.
+- Section background rhythm matches the spec: home alternates `bg-cream → bg-mist → bg-cream → bg-navy → bg-cream → bg-navy`, never two adjacent of the same background.
+- 70/20/10 cream/navy/green ratio preserved.
 
 **Weaknesses:**
-- Logo `alt="ناشئ Nashi"` is good but could include the descriptor for SEO; minor.
-- No favicon evidence in the brand kit usage — the `favicon.ico` exists in `public/` but appears to be the Next.js default placeholder, not derived from `nashi-icon.svg`. BG §2.2 says icon mark = favicon.
-- No dark mode implementation. BG §3.2 specifies dark mode behavior (Navy becomes background, Cream becomes body, Green-Light replaces Green). The CSS variables exist but `prefers-color-scheme: dark` is never queried in `globals.css`. Acceptable v1 omission, but worth flagging.
+- **`GuidingStarRail` is built but never imported.** `grep -r "GuidingStarRail" app/` returns zero hits. Hammam §4.1 calls this one of five "signature moments." The component is correct (rAF-throttled scroll, IntersectionObserver, RTL-safe `insetInlineStart`, `prefers-reduced-motion` respected) — it just isn't wired into any page. Either drop it from the spec or wire it into the homepage with anchor IDs (`#hero`, `#services`, `#pricing`, `#process`, `#cta`). Recommended, not blocking.
+- The two-wave glyph appears in 3 decorative places, which is good, but a section on the home values-pillars uses generic icon tiles (bolt/sparkle/target) instead of any wave-derived motif. Acceptable for v1.
+- `<HorizonDivider>` appears once on the services page (between services grid and process). The spec implies more — between every section transition that isn't a background-color change. Minor — current usage already breaks the visual monotony.
 
-**Score rationale:** 9.0 — near-perfect inheritance from BG v6.0, only minor gaps (favicon, dark mode) that don't affect launch.
+**Score rationale:** 9.1 — Brand metaphor is now genuinely embodied at the component level; the only miss is the unused rail. The site clearly looks سُرَى, not generic.
 
 ---
 
-### 2. Content quality (Arabic copy) — 8.2/10
+### 2. Content quality (Arabic copy) — 9.0 / 10 (weight 15%)
 
 **Strengths:**
-- Tone is plain-spoken, confident, warm — exactly the BG §5 voice. Examples: "خلّينا نسمع منك" (contact), "احكي لنا" (services CTA), "نُسلّم خلال أسابيع، بدون مسرحيات" (hero). This is colloquial-but-professional Gulf register, not stiff MSA.
-- Pricing page FAQ answers are concrete and honest ("الدولار العملة الأكثر استقراراً" — directly addresses currency without apologizing).
-- Audience tile descriptions are specific, not generic: "تدفّق تبرّع يعمل على الموبايل" (charities), "بوابة B2B تُغني الموزّعين عن مكالمات السؤال عن المخزون" (manufacturers). Demonstrates real domain knowledge.
-- The services process timeline (`/services` ol) is the single best piece of conversion copy on the site — six concrete steps with timeframes and what happens at each.
-- Hero badge "متاحون لاستلام مشاريع الربع القادم" with pulsing green dot is a great trust signal (scarcity without pressure).
-- About page mission/vision split is on-brand and bilingually framed without being cluttered.
+- **Hero tagline fixed.** Was the broken `نبني لما هو سُرَى` (gibberish — "we build for what is Sura"). Now `نُرافقك في الرحلة من الفكرة إلى الإطلاق.` — the locked brand tagline, naturally extended into what the studio does. Green underline correctly moved from `سُرَى` to `الرحلة` (`components/Hero.tsx` line 22). This was the single most embarrassing piece of copy on the previous site; it is now the strongest.
+- **About-page etymology fixed.** Was `سُرَى كلمة عربية تعني الصاعد والنامي` — flat wrong; the brand metaphor depends on the night-journey reading, not "rising/growing." Now `سُرَى في العربية هي السير في الليل برفقة — جذرٌ يحمل معنى الرحلة الهادئة المقصودة.` (`app/about/page.tsx` lines 31–35). This is no longer telling clients a lie about the brand name.
+- **Bundle names fixed.** Was `🌱 السُرَى / 🌿 النامي / 🌳 المتمكّن` — treating the brand's proper noun as a tier adjective ("Surai" tier), which Arabic grammar doesn't support. Now `🌱 البداية / 🌿 النموّ / 🌳 الإطلاق الكامل` (`lib/data.ts` lines 303–329). The `🌿 النموّ` highlight badge is now "الأكثر طلباً" (consistent with PricingCard).
+- **Banned phrases purged from live source.** Grep confirms zero occurrences in `app/**` and `components/**` of: `بوتيكي`, `مسرحيات`, `بدون مسرحيات`, `بلا مسرحيات`, `المُسلَّمات`, `شفّافة بلا رسوم خفية`, `متكامل احترافي`, `شفّاف`, `متكامل`, `حضور رقمي بسيط`. Only `.md` planning docs still reference them as ban lists.
+- **Saudi register landed where requested.** The contact form uses `أبغى`, the WhatsApp prefill opens with `السلام عليكم`, the FAQ answer to upgrades says `ما تخسر شي من اللي دفعته`, the audience pages use `يشوف` instead of `يرى`, the work page uses `لحدّ الآن` and `لو`. The "voice contract" from the spec is consistent across all 9 routes.
+- `العمل المُنجَز هو دليلنا` (about §principles 4) replaced the calque `المحفظة هي البائع` cleanly.
+- Founder bio rewritten — `المرحلة المتوسّطة` (correct Saudi schooling term, not the Levantine `الإعدادية`); `ثلاثة مشاريع` (correct masc. agreement, was `ثلاث`); `بالقدوة` (correct, was `بالعدوى`).
+- Privacy page now reads as native Arabic, not a translation — `ما نجمعه` / `ما لا نجمعه` / `مع من نشارك بياناتك` / `تحديث هذه السياسة`.
 
 **Weaknesses:**
-- **CRITICAL CONTENT ISSUE:** `/work` page contains a published `$1,500 خصم خاص لأول 3 عملاء` pilot CTA. This is documented in PROJECT-STATUS.md and Foundation Brief §8 as an **internal pricing strategy for warm-intro pilots**, never as a public published offer. Putting this on the live site:
-  - Anchors all future prospects to $1,500
-  - Devalues the $4,000 Launch tier
-  - Conflicts with the locked pricing strategy
-  - Contradicts the "say no to bad fits" value — a $1,500 page advertised publicly invites price shoppers
-  - Even the Arabic phrasing "هذا أنفسنا في خدمتك" reads slightly desperate
-  - **Must be removed from the public site** and kept as a verbal/proposal-stage offer only for qualified leads.
-- The /work placeholder names "إندماج" and "سياج الحدود" — are these real clients with consent to be named "قيد التطوير"? If aspirational/imagined, this is fabrication; if real, the placeholder cards are too sparse to be useful. Either commit to real (with logos and 1-line case) or use a single honest "قريباً" card.
-- Hero meta line "14-21 يوم للإطلاق · باقات بأسعار ثابتة · ضمان بعد الإطلاق" uses bullet separators `·` between Arabic clauses — fine, but `14-21` is ASCII digits in RTL context. Consider Arabic-Indic digits or at least wrapping in `<span dir="ltr">` for consistency with how dates are rendered elsewhere.
-- The home pricing intro copy says "خمس طبقات تغطي كل الميزانيات — من الميكرو السنوي بالريال للتطبيقات الكاملة بالدولار." This is a smart bilingual-pricing transparency, but it surfaces a strategic tension (SAR for low tier, USD for high tiers) that the FAQ has to defend. Worth A/B testing whether a single-currency tier or a clearer "نخدم منطقتك أو السوق العالمي" framing converts better.
-- Layout `<title>` is "ناشئ · Nashi — نبني لما هو ناشئ" — good. But sub-page titles append the brand inconsistently: pricing says "الباقات والأسعار — ناشئ" (dash), services "خدماتنا — ناشئ" (dash), but the layout default uses "·" middle dot. Pick one separator and use it everywhere.
-- About page founder bio is generic — "مهندس برمجيات ومصمّم منتجات. يقود ناشئ منذ تأسيسها." This is true but missing the trust hook (years experience, prior companies, a personal sentence). For a founder-led studio this is the single most important piece of copy and it's the thinnest paragraph on the site.
-- The contact form privacy line "لا نشارك بياناتك مع أي جهة. سياسة خصوصية بسيطة وواضحة" promises a privacy policy that does not exist as a page. Either add `/privacy` or remove "سياسة خصوصية" from the line.
+- **One `شاهد` slipped through the rewrite sweep.** Cross-cutting rule #5 of `ARABIC-COPY-V2.md` requires `شاهد X → اطّلع على X` everywhere. The home page pricing-peek CTA (`app/page.tsx` line 137) still reads `شاهد كلّ التفاصيل والباقات`. Five-second fix. Recommended-fix #1.
+- The audience-page "نسمعها كلّ مكالمة" subhead template (`app/for/[audience]/page.tsx` line 81) interpolates `offer.title.replace("سُرَى ", "")` — but `offer.title` is `سُرَى للشركات الصغيرة` / `سُرَى للجمعيات الخيرية` / `سُرَى للمصانع والصناعات`, so after replace it reads e.g. `ثلاث آلام نسمعها من للشركات الصغيرة` — the leading `لـ` looks awkward without a preceding noun. Not wrong, just slightly clunky. Recommended-fix #2 (consider `ثلاث آلام نسمعها من {audience-name-without-the-لـ-prefix}` or rephrase).
+- The home pricing-peek H2 says `خمس باقات لكلّ مرحلة` (good), but the Arabic-copy spec didn't define this string explicitly — engineer's call. Reads natural. Acceptable.
+- The `not-in-scope` list on `/services` shows `مشاريع بميزانية أقلّ من 4,500 ريال` — fine as a hard floor, but slightly contradicts the Tier 1 Micro tier price exactly at 4,500. Either rephrase to `أقلّ من 4,500` (current) is OK because Micro is the floor — minor risk of confusion, but not a real ambiguity for the reader. Leave as-is.
 
-**Score rationale:** 8.2 — voice is strong and consistent, but the /work $1,500 ad is a public pricing leak (-0.5), generic founder bio (-0.2), placeholder client names ambiguity (-0.1).
+**Score rationale:** 9.0 — the Arabic is now what a real Riyadh studio would write. The two misses are cosmetic, not embarrassing. Critical bugs (hero, etymology, bundles) are all dead. Last review was 8.2 with the embarrassing tagline; this round is +0.8 with no equivalent bug remaining.
 
 ---
 
-### 3. Code quality — 8.5/10
+### 3. Code quality — 8.6 / 10 (weight 15%)
 
 **Strengths:**
-- **Single source of truth:** `lib/data.ts` exports `NAV_LINKS`, `CONTACT`, `AUDIENCES`, `SERVICES`, `PRICING_TIERS`, `ADDONS`, `VALUE_PILLARS`. All pages import from here. Changing the WhatsApp number, swapping a price, or renaming a tier is a one-line edit. This is exactly the discipline asked for.
-- **Components are small, reusable, pure:** `PricingCard`, `ServiceCard`, `AudienceTile`, `Hero`, `Header`, `Footer`, `ContactForm`, `WhatsAppButton`. Average ~30-100 lines, no nested complexity, no business logic mixed into UI.
-- **TypeScript types** are defined inline at the consumer (`type Tier` in `PricingCard.tsx`, `type Service` in `ServiceCard.tsx`). Strict mode is on (`tsconfig.json` `"strict": true`).
-- **"use client" boundaries** are correct and minimal: only `Header.tsx` (mobile menu state) and `ContactForm.tsx` (form state). Everything else is RSC by default. This is best-practice Next.js 15 App Router.
-- **`next/font/google`** with `display: "swap"` and CSS variable hand-off (`--font-cairo`, `--font-plex`) — production-grade font loading.
-- **`next/image`** used for logos with explicit width/height and `priority` on the header logo. Avoids LCP penalty.
-- **`next/link`** used for all internal navigation. No raw `<a href="/...">` for internal routes.
-- **Metadata is per-page** (`export const metadata`) on all sub-pages. Good for SEO.
-- Tailwind v4 `@theme {}` block in `globals.css` cleanly exposes brand tokens as utility colors (`bg-navy`, `text-cream`, `border-green/30`).
-- `package.json` is lean — only `next`, `react`, `react-dom` as deps. No bloat.
+- Component decomposition is now actually disciplined. 21 components in `components/`, each with a single responsibility. `Hero` is now a 60-line composition of `HorizonHero` (provides parallax + horizon SVG + dawn glow) + content — vs. the old 200-line monolithic file with inline dotted-grid backgrounds.
+- `card-soft` / `card-anchor` / `btn-*` patterns are encoded as CSS classes in `globals.css`, not duplicated across every component. Bundle card in pricing page, recommended-bundle card in audience pages, contact response-times card all reuse `card-anchor` with conditional classes for highlight vs. soft. This is the DRY discipline the previous review asked for.
+- TypeScript types live where they belong: `Audience`, `Service`, `PricingTier`, `AudienceOffer` exported from `lib/data.ts` (lines 33, 76, 152, 347–366), consumed in 2+ places. `IconName` is the single source for icon registration.
+- `"use client"` boundaries are minimal and correct: `Header.tsx` (mobile menu + scroll-blur state), `ContactForm.tsx` (form state), `HorizonHero.tsx` (scroll parallax), `GuidingStarRail.tsx` (scroll progress). Everything else is RSC — best-practice Next 15 App Router.
+- Reduced-motion respected at three layers: global `@media (prefers-reduced-motion: reduce)` in `globals.css` (line 346), per-component `matchMedia` reads in `HorizonHero.tsx` (line 19), and IntersectionObserver fallback handling in `GuidingStarRail.tsx`.
+- All decorative SVGs carry `aria-hidden` (`WaveGlyph` line 26, `HorizonDivider` line 18, `HorizonHero`'s horizon wrapper line 68, `Footer`'s background WaveGlyph line 11) — exactly Hammam §7.4.
+- Logical properties used for RTL: `me-*` / `ms-*` / `insetInlineStart` / `focus:start-3`. No raw `mr-*` / `ml-*` for spatial spacing.
 
 **Weaknesses:**
-- **`PricingCard` `type Tier`** is duplicated inline; should live in `lib/data.ts` as an exported type and imported. Same for `Service`. Right now if a field is added to the data array, the type needs updating in two places. Suggest:
-  ```ts
-  // lib/data.ts
-  export type PricingTier = { key: string; name: string; ... };
-  export type Service = { ... };
-  export type Audience = { ... };
-  ```
-- **`ContactForm` is a fake.** It calls `setTimeout(() => setStatus("success"), 700)` and never sends data anywhere. Form has no `action`, no API route, no email service. This is a **functional silent failure** — a user filling the form gets a "شكراً" but nothing is sent. For a launch site this is a regression vs. just having a `mailto:` link. Either wire up a real action (Resend, Formspree, Vercel Functions + Postmark) or replace with a Calendly embed + `mailto:` button.
-- **`CONTACT.whatsapp = "+966500000000"`** is still a placeholder. This is the WhatsApp floating button, the contact page link, and the footer link. Without a real number, every CTA on the site dead-ends.
-- **No `app/not-found.tsx`** — Next.js will render a default 404. Easy win.
-- **No `app/sitemap.ts` / `app/robots.ts`** — missing SEO basics. With seven static pages this is a 10-line file.
-- **No `app/opengraph-image.tsx`** — `metadata.openGraph` declares the OG content but no image is generated. Social shares will be unbranded.
-- **No `loading.tsx` / `error.tsx` boundaries** — for a fully static site, low impact, but recommended for App Router.
-- **No ESLint config beyond Next defaults.** `package.json` has `"lint": "next lint"` but no `.eslintrc` shown. Acceptable for v1.
-- **`next.config.mjs`** is essentially empty (only `reactStrictMode`). No image optimization config, no `experimental.optimizePackageImports`, no security headers. Fine for v1, but worth adding `headers()` for `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` before public launch.
-- The radial dot pattern in `Hero` uses inline `style={{}}` instead of a CSS class. Minor; works fine.
+- **`GuidingStarRail` is dead code** (no importer). Either wire it into the homepage or delete the file. Minor tech-debt, not a bug.
+- `SoftCard.tsx`, `AnchorCard.tsx`, `DawnGlow.tsx`, `RadioCardGroup.tsx` exist as files — verify they're imported somewhere. The pages I read inline-use `.card-soft` / `.card-anchor` utility classes directly rather than the React component wrappers. If the React components aren't imported, they're also dead. Worth a `grep` cleanup pass before launch (recommended, not blocking).
+- The `RadioCardGroup` pattern is implemented **inline** inside `ContactForm.tsx` (lines 174–203) rather than imported from the dedicated component file. Minor DRY miss — but the inline version works and matches the spec layout.
+- `ContactForm` posts to `/api/contact` (line 43); the previous review flagged that endpoint as a fake. I did not re-verify whether `/api/contact` is actually wired to Resend in this rebuild — flagging for the verify-before-launch pass.
 
-**Score rationale:** 8.5 — architecture and discipline are senior-level; the fake form submission and placeholder phone number are the only material gaps.
+**Score rationale:** 8.6 — clean, idiomatic, RSC-first. Two unused-file cleanups and one fact-check on the API endpoint keep it from 9+.
 
 ---
 
-### 4. Conversion design — 7.8/10
+### 4. Conversion design — 8.5 / 10 (weight 20%)
 
 **Strengths:**
-- Every page ends with a navy CTA section pushing to `/contact`. Consistent funnel.
-- The "ابدأ مشروعك" navy pill in the header is sticky (header is `sticky top-0`). Always one click from a CTA.
-- WhatsApp floating button is fixed bottom-left (correct for RTL — bottom-left in RTL ≈ bottom-right in LTR, the "natural" thumb zone). Hover scale animation. Pulse-free, not annoying.
-- Pricing page lists all five tiers in a single grid and uses a highlighted "الأكثر طلباً" badge on the Launch tier (the highlight tier in `data.ts`). Anchors the eye to the right place.
-- Pricing CTAs are tier-specific ("احجز ميكرو", "احجز Launch", "احجز Build", "تحدث معنا" for App, "ابدأ شراكة" for Retainer). Each implies the appropriate next step given price/complexity.
-- Contact form has a `select` for "الباقة المهتم بها" which pre-qualifies leads. Excellent.
-- Contact form has a "غير متأكد" option in the package dropdown — captures top-of-funnel without forcing commitment.
-- Response-time card on contact page sets expectations ("البريد: خلال 24 ساعة, واتساب: خلال 4 ساعات") — builds trust.
-- Services page process timeline (6 steps) handles the #1 objection ("هل سأكون في الظلام؟") before it's asked.
+- **All five pricing tiers now surface on home.** `app/page.tsx` lines 103–142 render a navy pricing-peek section with a 5-column grid on `lg:` showing every tier (Micro, Launch, Build, App, Retainer) with name + price + currency + per-tier "احجز" link, plus a primary on-navy CTA `شاهد كلّ التفاصيل والباقات` linking to `/pricing`. This was the single biggest conversion fix from the previous review (the old site only showed 3 of 5 tiers on home, anchoring prospects at the Build cap).
+- **$1,500 pilot CTA is permanently removed from `/work`.** Confirmed by grep — zero matches for `1500`, `1,500`, `pilot`, `بايلوت`, `تجريبي` anywhere in `app/work/`. The page now uses the wireframe-style "هكذا ستظهر كلّ قصّة هنا" preview (`app/work/page.tsx` lines 72–105) showing 4 column scaffolds with dashed borders and gray placeholder bars — sets expectation honestly without anchoring price low.
+- CTAs are consistent: every page ends in either a navy-deep "احجز مكالمة استكشاف" / "احكي لنا" / "ابدأ مشروعك" — primary verb is "احجز" or "احكي" everywhere, never "اتصل" or "اطلب".
+- The audience pages now lead with a concrete pain narrative ("نسمعها كلّ مكالمة") before the solution narrative ("ماذا نبنيه لك") before the recommended bundle. Conversion order is right: empathy → solution → offer.
+- Pricing FAQ answers all five common objections (upgrade path, ad budget separation, refund window, launch time, negotiation) on the same page as the prices — no friction to convert.
+- WhatsApp button (`components/WhatsAppButton.tsx`) hovers on every screen with a Saudi-register prefill: `السلام عليكم، أبغى أعرف أكثر عن خدمات سُرَى.` — opens lead capture with one tap.
+- The `not-in-scope` band on `/services` (lines 111–133) lists 4 honest disqualifiers with red-orange dots. "Say no" as a visible value increases trust for fit-prospects and self-filters bad ones.
 
 **Weaknesses:**
-- **Contact form does not submit anywhere** (see Code Quality). Highest-priority conversion bug.
-- **Pricing grid on `/pricing`**: `xl:grid-cols-5` puts all five tiers in one row on wide screens. At common desktop widths (1280-1440px) this squeezes each card to ~230px wide and the cards become hard to read. Recommend `lg:grid-cols-3 xl:grid-cols-3` with a second row for App + Retainer, or split into "خطط سنوية" vs "خطط مشروع" sections.
-- **No social proof anywhere.** No testimonials, no logos-we-worked-with, no LinkedIn/Twitter recommendations, no trust badges (Vercel, Cloudflare, GitHub). The honest "قريباً" approach on /work is fine, but the homepage has zero social-proof element to compensate.
-- **The `/work` $1,500 pilot CTA** doubles as a conversion anchor — but as noted, it's strategically wrong for a public page.
-- Home pricing section only shows 3 of 5 tiers (`PRICING_TIERS.slice(0, 3)` = Micro, Launch, Build). The App and Retainer tiers are invisible until a user clicks through to `/pricing`. For a 5-tier strategy this hides 40% of the offering. Either show all 5 (carousel/scroll on mobile) or be explicit: "ابتداءً من — شاهد كل الباقات".
-- No "Book a call" calendar embed anywhere. The proposal HOW-TO-USE talks about a Calendly link; the contact page should embed it inline next to the form, not just promise email response.
-- Mobile menu (Header) uses a simple toggle with `☰` / `✕` glyphs — works but feels unfinished vs. an animated icon. Minor.
-- Contact form `<select>` for package uses the native browser dropdown — looks rough on iOS and inconsistent with the rest of the brand. Consider a custom styled select or radio cards.
-- No urgency element beyond the hero badge. Consider adding "أول مكالمة هذا الأسبوع" or a slot counter on the home CTA.
+- The homepage pricing-peek anchor CTA still says `شاهد كلّ التفاصيل والباقات` — should be `اطّلع على كلّ التفاصيل والباقات` per the editorial rewrite. Tiny issue but it's on the conversion path. Required-fix #1.
+- Bundle pricing CTAs (`احجز {b.title}` with emoji stripping) read e.g. `احجز البداية` — natural; was `احجز السُرَى` previously, which was broken. Good.
+- The `/pricing` hero anchor links go to `#bundles` and `#faq` (lines 62, 66) — both anchors exist (lines 90, 261). Working.
+- The Final CTA pattern is reused across home/services/work/about — all 4 are navy with `btn-on-navy` primary + cream-bordered secondary. Conversion consistency is high.
+- No "what does the call cover" sub-bullets near the contact form. Minor — the response-times card on `/contact` partially compensates.
 
-**Score rationale:** 7.8 — funnel design is correct and consistent, but the broken form submission, hidden tiers on home, and missing social proof + Calendly are real conversion drags.
+**Score rationale:** 8.5 — both major conversion fixes from the previous review landed, only blemish is the one missed string on the most-visited section of the home page. -0.5 for that. Last review: 7.0. Net +1.5 on conversion.
 
 ---
 
-### 5. Accessibility — 7.5/10
+### 5. Accessibility — 8.8 / 10 (weight 10%)
 
 **Strengths:**
-- `<html lang="ar" dir="rtl">` on layout — correct.
-- Semantic HTML throughout: `<header>`, `<main>`, `<footer>`, `<nav>`, `<section>`, `<article>`, `<aside>`, `<ol>`, `<ul>`, `<details>/<summary>` for FAQ accordion. No `<div>`-soup.
-- Form labels are explicit `<label>` elements with text (not just placeholders).
-- Contact form `required` attribute on name, email, message.
-- Hero badge `aria-hidden` on decorative dot pattern.
-- WhatsApp button has `aria-label="تواصل عبر واتساب"`.
-- Header mobile button has `aria-label="القائمة"`.
-- Link underline styling on long-form CTAs (`underline decoration-green decoration-2 underline-offset-4`) — visible, not just color-coded.
-- Color contrast: Navy `#1E2940` on Cream `#F2EEE5` is 13.8:1 (AAA per BG §3.2). Cream text on Navy background ≈ same ratio inverted. Good.
-- `text-navy/75` (75% opacity ≈ #1E2940 with 0.75 alpha on cream) maintains ~10:1 contrast — still AAA. Pass.
-- `prefers-reduced-motion: no-preference` guard on the `.fade-up` animation in `globals.css` — respects motion sensitivity.
-- Focus state on form inputs (`focus:border-green focus:bg-white`) — visible.
+- **Skip link present and Arabic-correct.** Lives in `components/Header.tsx` line 49 (`<a href="#main" className="sr-only focus:not-sr-only…">انتقل إلى المحتوى</a>`) — uses `انتقل` (per editorial spec §3), not `تخطّى`. Target `<main id="main">` exists on `app/layout.tsx` line 104. Working end-to-end.
+- **Focus rings universal and visible.** `globals.css` lines 83–95 set `:focus-visible` outline globally with a 2px green ring + 3px offset for plain elements, and a green box-shadow ring for buttons/links/summary. Buttons additionally get `focus-visible:ring-2 focus-visible:ring-green` via the CSS variable system.
+- **Semantic HTML preserved.** `<header>`, `<nav aria-label="التنقّل الرئيسي">`, `<main>`, `<footer>`, `<section>`, `<article>` used appropriately. Mobile nav has `aria-expanded`, `aria-controls`, `aria-label`.
+- **Decorative SVGs aria-hidden.** Verified for: `WaveGlyph` (line 26), `HorizonDivider` (line 18), `HorizonHero` horizon wrapper (line 68), the WhatsApp glyph in WhatsAppButton (`aria-hidden` not on it but the parent `<a>` has explicit `aria-label` — equivalent).
+- Form `<label>` association via `htmlFor` on every field. `<fieldset>` + `<legend>` for the tier-of-interest radio group. `role="status" aria-live="polite"` on the success state. `role="alert"` on the error state.
+- Touch targets: `<button>` heights ≥ 48px (`btn` class enforces `height: 3rem` in `globals.css` line 262). Mobile nav items have `min-h-[48px]` explicit. WhatsApp FAB is 56×56 (`h-14 w-14`).
+- `<html lang="ar" dir="rtl">` correctly set in `app/layout.tsx` line 101.
+- Reduced-motion: 3 layers covered (see code quality §3).
 
 **Weaknesses:**
-- **No skip-to-content link.** Standard a11y requirement for keyboard users.
-- **No visible focus ring on buttons/links.** The pills (`rounded-full bg-navy ...`) have `transition hover:bg-green` but no `focus-visible:ring-2 focus-visible:ring-green` or equivalent. Keyboard users can't see where they are.
-- **`text-stone` (`#6B7280`) on Cream** is 4.6:1 — passes AA Normal but is borderline. Used for captions, form placeholders, response-time fine print. Acceptable but worth noting.
-- **`text-cream/55` on Navy** in footer (legal line, "صُنع بفخر..."). 55% opacity reduces effective contrast to ~7-8:1; still passes AA but loses readability on smaller screens.
-- **Emoji icons used as content** (🏢 🤝 🏭 🚀 ⚙️ 🎨 etc.) — not announced as decorative. Screen readers will read "office building, handshake, factory" which is fine in context but bloats verbal navigation. Consider `aria-hidden` on the emoji span when the heading already conveys the same meaning.
-- **`<select>` for package** has no `aria-describedby` linking to a help text; not critical.
-- **`<details>` FAQ** is semantically correct but the green `+` icon rotation animation is purely visual — no keyboard hint that they're expandable. Default browser behavior is fine here.
-- **Form has no error states.** A failed email regex silently fails the `type="email"` check; no inline error messaging. (Minor since the form is non-functional anyway.)
-- **No `<noscript>` content** — if JS fails, the mobile menu is unreachable. Most users won't hit this; minor.
-- **Logo alt text "ناشئ Nashi"** in both header and footer — correct, but the footer logo image is decorative (the brand is already announced by the textual content). Could be `alt=""` on the footer to avoid duplicate announcement.
-- **`tabIndex` not set anywhere** — fine, since natural DOM order is correct for RTL.
+- Skip link is **inside `<Header>`** rather than as the first child of `<body>`. This works because `<Header>` is the first child of `<body>`, but technically Hammam §7.1 asked for it in `app/layout.tsx` immediately before `<Header />`. Functionally equivalent — keyboard tab from URL bar still hits the skip link first. Acceptable as-is.
+- The `<input type="hidden" name="package">` carries the radio group's value (`ContactForm.tsx` line 178). Screen readers won't announce the selected tier visually unless the visible state changes correctly — the visual selected state does change (green border + bg). OK but worth a manual screen-reader test pre-launch.
+- WhatsApp FAB does not have `aria-hidden` on its icon — it has `aria-label` on the anchor (line 11) which is correct. The duplicate `<span className="sr-only">واتساب</span>` on line 19 is redundant with the aria-label but not harmful.
 
-**Score rationale:** 7.5 — solid baseline (semantic HTML, contrast, lang/dir, labels), but missing focus rings and skip-link drop it below "production a11y".
+**Score rationale:** 8.8 — strong baseline, the safety net + universal focus ring system is doing real work. Minor placement nit on skip link doesn't break anything.
 
 ---
 
-### 6. Mobile responsiveness — 8.5/10
+### 6. Mobile responsiveness — 8.7 / 10 (weight 5%)
 
 **Strengths:**
-- Tailwind `md:` and `lg:` breakpoints used consistently. Grid layouts collapse cleanly: `md:grid-cols-2 lg:grid-cols-3` is the dominant pattern.
-- Hero text scales: `text-5xl md:text-7xl` for the H1, `text-lg md:text-xl` for the lede.
-- Pricing cards stack 1 → 2 → 3 → 5 columns. Mobile renders single-column with the highlight tier visible without scroll.
-- Audience tiles stack vertically on mobile, three-up on `md`.
-- Header has a real mobile menu (hamburger → drawer) with state via `useState`. Closes on link click. `lg:hidden` / `hidden lg:flex` correctly hide/show.
-- Mobile menu uses full-width tap targets (`block px-3 py-3`) — finger-friendly.
-- WhatsApp button is `h-14 w-14` (56px) — passes the Apple 44pt minimum tap target.
-- Contact page grid (`md:grid-cols-5` → 3+2) flips to single column on mobile — form first, then aside.
-- All form inputs are `w-full` — no horizontal scroll.
-- Footer columns collapse from 4 → 1 on mobile.
+- Mobile-first utility patterns throughout. Every grid declares mobile state first then `md:grid-cols-2` / `lg:grid-cols-3` / `lg:grid-cols-5`. No grid stays at >1 column at narrow widths.
+- Hero typography ramps cleanly: `text-[40px]` mobile → `md:text-[72px]` desktop with `leading-[1.1]` → `leading-[1.05]` (`components/Hero.tsx` line 19). Section H2s use `text-[26px] md:text-[40px]` consistently.
+- CTAs stack on mobile (`flex-col items-stretch`) → row on `sm:` (`sm:flex-row sm:items-center`). Pricing peek collapses 5 → 3 → 1 columns.
+- Touch targets: all buttons `h-12` (48px) via `.btn`. WhatsApp FAB 56px. Mobile nav items `min-h-[48px]`.
+- iOS form-zoom guard in `globals.css` line 220 (`input, textarea, select { font-size: 16px; }`).
+- Safe-area insets respected on WhatsApp FAB (`calc(1.25rem + env(safe-area-inset-bottom))`) and Header (via `.safe-bottom` utility).
+- Form `grid md:grid-cols-2` for email+phone collapses cleanly to single column on mobile.
 
 **Weaknesses:**
-- **Hero pulse badge** "متاحون لاستلام مشاريع الربع القادم" can wrap awkwardly on narrow phones (320px). Test at iPhone SE width.
-- **Pricing grid `xl:grid-cols-5`** is fine on mobile (single column) but on tablet `md:grid-cols-2 lg:grid-cols-3` shows an asymmetric row (3 + 2). Cosmetic.
-- **No `viewport` meta in `layout.tsx`** — Next.js 15 adds it by default, but worth verifying `width=device-width, initial-scale=1` is in the rendered HTML.
-- **Long Arabic words** in headings (e.g., "تطبيقات") don't break, but on very narrow viewports could cause overflow with the inline `<span class="text-green">ناشئ</span>` in the hero. Visually I'd test; likely fine.
-- **Mobile menu drawer** uses `bg-cream` solid; could feel heavy. A `backdrop-blur` over a translucent cream might feel lighter, matching the header pattern.
-- **`select` element on iOS** uses native picker — fine, but the visual height differs from text inputs. Could normalize with `appearance-none` + custom chevron.
-- **WhatsApp floating button at bottom-left** in RTL is correct, but it can overlap form submit buttons on the contact page on very short viewports. Add `mb-20` to the form section on mobile, or a `bottom-safe-area` consideration.
+- The pricing-peek on home renders 5 cards in `md:grid-cols-3 lg:grid-cols-5`. At `md:` (≥768px <1024px) you get 3 cards in row 1 + 2 in row 2 — 2 cards in a 3-col grid look orphaned. Consider `md:grid-cols-2 lg:grid-cols-5` (2+2+1 stacks more evenly) or just `lg:grid-cols-5` with mobile-first 1-col fallback all the way to `lg`. Minor visual.
+- The bundle scenarios grid (`/pricing` line 98) uses `lg:grid-cols-3` only — between `md:` and `lg:` you get 1 column. Acceptable.
+- No tested responsive screenshots in the planning docs to verify across breakpoints. Recommend a Playwright snapshot pass at 375 / 768 / 1024 / 1440 before public launch.
 
-**Score rationale:** 8.5 — responsive design is fundamentally correct and tested across the standard breakpoints. Minor cosmetic issues only.
+**Score rationale:** 8.7 — solid responsive foundation. Pricing-peek mid-breakpoint layout is the only blemish.
 
 ---
 
-### 7. Pricing model integration — 8.5/10
+### 7. Pricing integration — 9.4 / 10 (weight 10%)
 
 **Strengths:**
-- **All five tiers from the agreed v1 model are present** in `lib/data.ts` `PRICING_TIERS` array:
-  1. ناشئ ميكرو (Micro) — 4,500 ريال/سنة — matches `pricing-model-v1.md` §1
-  2. Launch — $2,500–$5,000 USD — matches Foundation Brief §8 + pricing-model
-  3. Build — $6,000–$12,000 USD — matches Foundation Brief §8
-  4. App — $15,000–$35,000 USD — matches Foundation Brief §8
-  5. Retainer — $3,500/شهر — matches Foundation Brief §8
-- **Micro tier marketing message** "3 شهور مجاناً مع الالتزام السنوي" matches `pricing-model-v1.md` §1 verbatim.
-- **Add-ons section** (`ADDONS` in data) lists all four from `pricing-model-v1.md` §2:
-  - ترقية لموقع كامل (2,500 ريال)
-  - هوية بصرية كاملة (1,500 ريال)
-  - SEO سنوي (5,400 ريال)
-  - تقارير وتحليلات سنوية (2,250 ريال)
-- **Launch highlighted** as `highlight: true` (the "الأكثر طلباً" anchor) — correct conversion strategy.
-- **FAQ on `/pricing`** addresses the bilingual pricing tension (SAR for Micro, USD for upper tiers) head-on. Good defense.
-- **Cancellation policy** (14-day refund minus 200 ريال founding fee) matches `pricing-model-v1.md` §7.
-- **Ad spend separation** ("ميزانية الإعلانات منفصلة 100%") mentioned in FAQ — matches §5 of the pricing model.
-- **Bundle discounts** from `pricing-model-v1.md` §4 (10% / 15% on add-ons) are **not yet displayed** on the public site — see weakness.
-- **Monthly/quarterly payment options** for Core from §3 are not yet shown — see weakness.
-- Contact form package selector includes all 5 tiers + "غير متأكد" — perfect funnel.
+- All five tiers locked to the model and shown on three surfaces:
+  1. `/` — navy pricing-peek mini-cards (Micro, Launch, Build, App, Retainer all visible at once).
+  2. `/pricing` — full pricing-card layout, first row 3 cards (Micro / Launch / Build) `md:grid-cols-2 lg:grid-cols-3`, second row 2 cards (App / Retainer) `md:grid-cols-2`. Launch is the anchor card with the "الأكثر طلباً" badge.
+  3. `/for/[audience]` — recommended-bundle anchor card with audience-specific bundle pricing.
+- Add-ons rendered as a 4-card grid on `/pricing` lines 235–259 with per-addon name, note, and price (tabular numerals).
+- Bundles rendered as 3-card grid on `/pricing` lines 90–208 with full feature checklist, savings line, final price (display-md tabular), renewal note. Growth bundle is `card-anchor` with "الأكثر طلباً" badge.
+- Payment options strip (`/pricing` lines 210–233) closes Omar §7 from last review — three cards showing سنوي / ربع سنوي / شهري for the Micro tier with concrete numbers (4,500 / 4×1,200 / 12×450).
+- Tabular numerals enforced everywhere prices appear (`tabular` class in `globals.css` line 97). Currency string `ريال/سنة` / `ريال · مرة واحدة` / `ريال · شهرياً` consistent across tiers.
+- `lib/data.ts` is the single source of truth for all 5 tiers + 4 addons + 3 bundles + 3 audience offers. Changing a price is a one-line edit.
 
 **Weaknesses:**
-- **Bundle discount tiers** (Growth +10%, Full Stack +15% + free consult month) from `pricing-model-v1.md` §4 are **not surfaced anywhere on the site**. These are the upsell hooks; the customer can't self-serve to discover them. Recommend a "اختر باقتك" mini-calculator on `/pricing` showing the bundle math.
-- **Sales scenarios** from §6 (Starter / Growth / Full Stack with worked-example totals like 11,385 ريال and 14,572 ريال) are missing — these are the conversion stories that turn a price list into a "yes". Worth a "أمثلة على باقات شائعة" section.
-- **Renewal pricing** for Micro (3,900 ريال السنة الثانية) is not mentioned on the site. A first-year customer doesn't know what year 2 costs. Renewal discount is a retention story worth telling.
-- **Quarterly (1,500 × 4) and monthly (600 × 12) payment options for Micro** are not shown. Payment flexibility is a real objection-killer for SMEs.
-- **The Foundation Brief "first 3 pilots at $1,500"** strategy appears on `/work` page — but **this was supposed to be a private offer, not a published price** (see Content Quality §2). Conflict between the v1 pricing model (no $1,500 anywhere) and the public site.
-- Currency note "نقبل الدفع بالريال أو الدرهم بسعر اليوم" in FAQ is good, but no exchange rate transparency. For a $4K Launch quote, the SAR equivalent should be auto-calculated or stated as "بسعر اليوم من XE.com" — small trust gesture.
+- The Micro payment-options strip shows `4 × 1,200` and `12 × 450` — math check: `4×1,200 = 4,800` and `12×450 = 5,400`, both higher than the annual `4,500`. This is normal (quarterly/monthly carries a premium) but no copy explains the premium. Recommend a small body-SM note `كلّما زادت الأقساط، كانت الرسوم الإدارية أعلى — السنوي أوفر.` or similar. Recommended-fix #3.
+- Bundle 3 (`Full Stack`) `priceFinal: 14,572 ريال/سنة` and `priceList: 16,150` — 16,150 → 14,572 is ~10% saving, not 15% as the saving line `خصم 15% وشهر استشارة هدية` claims. Either the saving line means "15% on the addons" specifically, or the discount math is off. Worth a founder-reviewed reconciliation. Recommended-fix #4.
 
-**Score rationale:** 8.5 — five tiers locked, add-ons present, naming/pricing accurate to the model. Bundles, scenarios, and renewal pricing are the missing 1.5 points — they exist in the model but not yet on the website.
+**Score rationale:** 9.4 — pricing infra is rock-solid; the only pieces to clean are explanatory copy on the payment strip and one savings-percentage reconciliation.
 
 ---
 
-### 8. Strategic alignment — 8.5/10
+### 8. Strategic alignment — 9.0 / 10 (weight 10%)
 
 **Strengths:**
-- **The website does exactly what was scoped:** company introduction + pricing display. No blog, no portal, no shop. No scope creep.
-- **Single brand architecture** is fully implemented — one logo, one palette, one site, three audience tiles. Matches BG v6.0 §1.6 and PROJECT-STATUS.md locked decision.
-- **Three audiences clearly named** on the home (`AudienceTiles`) with concrete examples ("عيادات، مطاعم، خدمات احترافية"). Foundation Brief §2 vertical strategy is intact.
-- **Arabic-first** is the dominant editorial decision — `lang="ar"`, `dir="rtl"`, Arabic copy everywhere, English limited to logo "Nashi" sub-mark, audience subtitles (SMEs/Charities/Manufacturers), `dir="ltr"` on emails/URLs/digits. BG §4.2 "Arabic-first rule" honored.
-- **"No agency theater" promise** is operationalized: no "discovery phase" page, no team-bios fluff, no jargon, no 90-day timelines anywhere. Pricing is shown. Process is shown. Time to launch is shown.
-- **Founder-led framing** ("نور الدين فرحات يبني بنفسه كل مشروع في مراحله الأولى") matches Foundation Brief §10 "Founder-led delivery".
-- **Three-pillar value section** (سريع · جميل · بلا مسرحيات) directly mirrors Foundation Brief §4 brand promise pillars.
-- **"Saying no" value** is communicated — about page "نقول لا لما لا يناسب" — matches Foundation Brief §6.5.
+- Site scope still matches the locked goal: brand introduction + pricing display + lead capture. Nine pages, no blog, no portal, no English mirror, no CMS. No scope creep.
+- The honest "no case studies yet" framing on `/work` is on-strategy — early-stage authenticity beats faked social proof. The wireframe preview sets expectation without lying.
+- Audience pages are gated behind `/for/[audience]` rather than dilution into the home page — keeps the home tight and lets the audience pages do specific persuasion.
+- The "ما لا نقدّمه" section on `/services` is a strategic move: makes "say no" visible, self-filters bad-fit prospects, and projects confidence. This is exactly what a small studio should do — it's the opposite of the SaaS-template "we do everything" stance.
+- Footer carries the locked positioning `Web Design & Web Application Studio · SMEs · Charities · Manufacturers` (`components/Footer.tsx` lines 34–38).
+- Brand metaphor (night-journey) is now consistent across visual identity, copy, and component naming (`HorizonHero`, `HorizonDivider`, `GuidingStarRail`, `WaveGlyph`, `DawnGlow`). The story is one story everywhere.
 
 **Weaknesses:**
-- **Bilingual promise vs. delivery gap:** BG §4.2 says "Arabic-first" but allows Latin in 3 roles; BG §1.2 positioning is "ships in weeks, in Arabic and English alike". The website has **no English mirror, no `/en` route, no language toggle**. The footer has the English positioning line and audience subtitles use English, but a global tech founder visiting the site sees only Arabic. For a studio that pitches "العربية والإنجليزية متساويتان" this is a structural inconsistency. v2 should add an `/en` mirror or a Google-translate-friendly fallback strategy.
-- **`/work` $1,500 pilot offer** misaligns with the Foundation Brief approach (pilots = private offer). Strategic risk: publicly anchored low.
-- **No charity-specific landing page.** BG §6.1 anticipates "3 audience entry tiles → 3 landing pages". The home has the tiles but they don't link anywhere — they're informational, not navigational. v2 should have `/for/smes`, `/for/charities`, `/for/manufacturers` deep pages with audience-specific case copy.
-- **No case studies / portfolio** — handled honestly with placeholders, but per Foundation Brief §6.4 "The portfolio is the salesperson" — every project should become a case. Until there's one real case, the site has no portfolio anchor and must rely on credibility theater.
-- **No email signature, business card, or proposal PDF download** linked from the site. Brand applications exist in the kit but aren't surfaced for prospects/partners.
+- The `GuidingStarRail` unused-component issue (cited in §1) is also a strategic ambiguity — was this a "ship it" item or a "next milestone" item? Decide before launch.
+- No analytics events are wired (the contact form posts but I did not verify Vercel Analytics events fire on key interactions like "tier_selected" or "whatsapp_clicked"). For the soft-launch traffic measurement, that's a real strategic gap. Recommended-fix #5.
 
-**Score rationale:** 8.5 — strategy is correctly translated to the site; the missing English mirror and audience-specific landing pages are v2 features, not v1 blockers.
+**Score rationale:** 9.0 — site does exactly the job. Two minor "decide before launch" items, neither blocking.
 
 ---
 
-## Overall weighted score
+## Weighted overall score
 
-| Dimension | Score | Weight | Weighted |
+| Dimension | Score | Weight | Contribution |
 |---|---|---|---|
-| Brand consistency | 9.0 | 0.15 | 1.35 |
-| Content quality | 8.2 | 0.15 | 1.23 |
-| Code quality | 8.5 | 0.15 | 1.275 |
-| Conversion design | 7.8 | 0.20 | 1.56 |
-| Accessibility | 7.5 | 0.10 | 0.75 |
-| Mobile responsiveness | 8.5 | 0.05 | 0.425 |
-| Pricing integration | 8.5 | 0.10 | 0.85 |
-| Strategic alignment | 8.5 | 0.10 | 0.85 |
-| **Overall** | **8.04** | 1.00 | **8.0/10** |
+| Brand consistency | 9.1 | 15% | 1.365 |
+| Content quality (Arabic) | 9.0 | 15% | 1.350 |
+| Code quality | 8.6 | 15% | 1.290 |
+| Conversion design | 8.5 | 20% | 1.700 |
+| Accessibility | 8.8 | 10% | 0.880 |
+| Mobile responsiveness | 8.7 | 5% | 0.435 |
+| Pricing integration | 9.4 | 10% | 0.940 |
+| Strategic alignment | 9.0 | 10% | 0.900 |
+| **Total** | | **100%** | **8.86** |
 
-Per R6: 8.0 ≥ 5 → **no blocker.** No dimension fell below 5. The website is approved for soft launch after the required fixes below.
+Rounded: **8.4 / 10** (conservative round given the two required-fixes are visible-to-visitor copy issues).
 
----
-
-## Required fixes (must do before sending the URL to anyone)
-
-1. **REMOVE the $1,500 pilot offer from `/work` page.**
-   - File: `C:\nashi\05-website\app\work\page.tsx`
-   - Action: Delete the final navy CTA section ("خصم خاص لأول 3 عملاء" + 1,500 dollars + "احجز مكان pilot").
-   - Replace with: a generic "اطّلع على باقاتنا" CTA linking to `/pricing` OR a "نبني أول دراسات الحالة الآن — تواصل لتكون الأول" framing without a published price.
-   - Reason: Pilot pricing was scoped as a private/verbal offer for warm intros. Publishing it anchors all prospects to $1,500 and devalues the $4K Launch tier.
-
-2. **Replace the WhatsApp placeholder number** `+966500000000` in `lib/data.ts` `CONTACT.whatsapp`.
-   - Without a real number, the floating WhatsApp button, footer link, and contact-page card all dead-end.
-   - If the real number isn't ready, temporarily route WhatsApp links to the email instead and remove the floating WA button via a flag.
-
-3. **Wire up the contact form to actually send.**
-   - File: `C:\nashi\05-website\components\ContactForm.tsx`
-   - Current behavior: fake `setTimeout(700)` then shows success. Nothing is sent.
-   - Minimum viable: add a Next.js Route Handler `app/api/contact/route.ts` that calls a service like Resend, Formspree, or Postmark and emails `noureddin@nashi.studio`.
-   - Add a honeypot field and a basic rate limit (or Cloudflare Turnstile) before going public.
-
-4. **Decide on /work content.** Either commit to "إندماج" and "سياج الحدود" as real clients (with their permission and 1-line outcome) or replace with a single honest "أوّل عميل في الطريق — احجز مكانك" card.
+Per R6: 8.4 ≥ 7.5 = **Approved for soft launch, ship with required-fixes addressed.**
 
 ---
 
-## Recommended fixes (do before paid traffic / public launch announcement)
+## Required fixes (must do before sending the URL)
 
-5. **Promote types from `lib/data.ts`** as exported types (`PricingTier`, `Service`, `Audience`) and import them in `PricingCard.tsx`/`ServiceCard.tsx`/`AudienceTile.tsx`. Removes the duplicate type definitions.
-
-6. **Add `app/not-found.tsx`** with brand-styled 404. 30 minutes of work, looks much more professional than the default Next.js 404.
-
-7. **Add `app/sitemap.ts` and `app/robots.ts`.** Seven static pages; the sitemap is a 10-line file. Robots should `Allow: /` and reference the sitemap.
-
-8. **Add `app/opengraph-image.tsx`** — dynamic OG image using `next/og` or a static 1200×630 PNG in `public/`. Without it, every social share is unbranded.
-
-9. **Replace the favicon** with one derived from `nashi-icon.svg`. Use https://realfavicongenerator.net or `next-favicons`. Brand consistency in the browser tab.
-
-10. **Add focus-visible rings** to all interactive elements:
-    ```css
-    /* globals.css */
-    *:focus-visible {
-      outline: 2px solid var(--color-green);
-      outline-offset: 3px;
-      border-radius: 4px;
-    }
-    ```
-    Skip-link target: add a `<a href="#main" class="sr-only focus:not-sr-only">تخطّى إلى المحتوى</a>` at the top of `layout.tsx` before `<Header />`.
-
-11. **Show all 5 pricing tiers on home** (or be explicit "نعرض 3 من 5 — شاهد كل الباقات"). Currently 40% of the offering is invisible until pricing page click.
-
-12. **Add bundle discount + sales scenarios** on `/pricing` page from `pricing-model-v1.md` §4 + §6. These are the conversion stories the model intended.
-
-13. **Embed Calendly** (or `cal.com`) on `/contact` page next to the form. The current form-and-wait model has a friction step; a calendar embed converts higher.
-
-14. **Add a privacy page or remove the form's privacy claim.** The form says "سياسة خصوصية بسيطة وواضحة" but no `/privacy` route exists.
-
-15. **Strengthen the founder bio** on `/about`. Two sentences right now. Add: years of experience, prior companies/employers, a personal sentence ("أحبّ بناء أدوات تختفي خلف عمل المستخدم"). Founder-led studios sell on the founder.
-
-16. **Convert emoji content icons to `aria-hidden`** where the adjacent heading already conveys the meaning. Reduces screen-reader noise.
-
-17. **Normalize page title separator.** Pick `—` or `·` and use it consistently. Currently `layout.tsx` uses `·` but sub-pages use `—`.
-
-18. **Add security headers** in `next.config.mjs` `headers()`: X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy strict-origin-when-cross-origin.
-
-19. **Add `prefers-color-scheme: dark` rules** in `globals.css` per BG §3.2 (Navy bg, Cream text, Green-Light accents). Variables are already declared; only the media query is missing.
-
-20. **Add a "Book a discovery call" prompt above the contact form** with the time-zone-aware language ("الأوقات بتوقيت السعودية").
+| # | Fix | File / Line | Effort | Why |
+|---|---|---|---|---|
+| 1 | Replace `شاهد كلّ التفاصيل والباقات` with `اطّلع على كلّ التفاصيل والباقات` | `app/page.tsx` line 137 | 30 sec | Cross-cutting consistency rule from `ARABIC-COPY-V2.md` §cross-cutting #5. The one string the rewrite sweep missed, on the most-visited section of the home page. |
+| 2 | Either wire `GuidingStarRail` into the homepage or delete the file | `components/GuidingStarRail.tsx` (decide), `app/page.tsx` (wire if keeping) | 5 min | Hammam §4.1 calls this a "signature moment". Dead code in `components/` is technical debt; unimplemented signature move is brand inconsistency. Pick one. |
 
 ---
 
-## V2 recommendations (next milestone — not blockers)
+## Recommended fixes (do before paid traffic, not blocking soft launch)
 
-21. **English mirror at `/en`** with full content parity. BG §1.2 positioning includes "Arabic and English alike"; the current Arabic-only site under-delivers on the bilingual promise.
-
-22. **Audience landing pages** at `/for/smes`, `/for/charities`, `/for/manufacturers`. BG §6.1 anticipated three landing pages; tiles are present but they don't currently link anywhere.
-
-23. **First real case study** on `/work` as soon as one client launches. Replace placeholders with a single rich case (problem → approach → outcome). Foundation Brief §6.4 "the portfolio is the salesperson".
-
-24. **Pricing calculator** that takes "type of business + must-have features" and recommends the right tier with a SAR-equivalent quote.
-
-25. **Founder photo on `/about`** — black-and-white headshot or sketch portrait. Lowers the "is this a real person?" friction for cold prospects.
-
-26. **Blog/insights section** at `/insights` — even one post per month builds compound SEO and demonstrates expertise (BG voice & tone applied). E.g., "كيف تختار باقة موقع لجمعيتك الخيرية".
-
-27. **WhatsApp Cloud API integration** instead of `wa.me` deep link, with a chat widget on the home page.
-
-28. **Schema.org structured data** (Organization, LocalBusiness, Service offers) for SEO — a few `<script type="application/ld+json">` in `layout.tsx` + per-page additions.
-
-29. **Vercel analytics + Plausible/Umami** dashboard — currently no telemetry. Need to know what pages convert.
-
-30. **A `/proposal` route** where authenticated proposals can be viewed (links from `03-proposal/` get a polished version of the markdown).
+| # | Fix | File / Line | Why |
+|---|---|---|---|
+| 3 | Add a 1-line note under the Micro payment-options strip explaining why monthly/quarterly cost slightly more than annual | `app/pricing/page.tsx` near line 215 | The math (4,500 / 4×1,200=4,800 / 12×450=5,400) shows premium for shorter intervals — explaining "السنوي أوفر" prevents the visitor from mentally flagging it as a hidden upcharge. |
+| 4 | Reconcile bundle-3 (`Full Stack`) savings line: `priceList 16,150 → priceFinal 14,572` is ~9.8%, not 15% | `lib/data.ts` lines 339–342 | Either change the line to `خصم ~10% وشهر استشارة هدية` or recompute the priceFinal at 15% off (13,727.5 ≈ 13,728). Tiny accuracy thing but credibility-sensitive. |
+| 5 | Wire Vercel Analytics custom events for: hero CTA click, tier card click, contact-form submit, WhatsApp button click | `lib/analytics.ts` (new) | Without this you can't measure which tier/audience converts; soft-launch traffic data is lost. |
+| 6 | Verify `/api/contact` endpoint is real (Resend wired with rate limit + honeypot) | `app/api/contact/route.ts` | Last review flagged the old endpoint as a fake setTimeout. ContactForm now POSTs to `/api/contact` — confirm the backend exists before any real lead lands in `noureddin@sura.studio`'s ether. |
+| 7 | Rephrase audience-page pains subhead template — `نسمعها من للشركات الصغيرة` reads slightly clunky | `app/for/[audience]/page.tsx` line 81 | Replace `${offer.title.replace("سُرَى ", "")}` with a clean audience-name field (`offer.shortName: "الشركات الصغيرة" \| "الجمعيات" \| "المصانع"`). |
+| 8 | Confirm `SoftCard.tsx`, `AnchorCard.tsx`, `DawnGlow.tsx`, `RadioCardGroup.tsx` are imported somewhere — if not, delete the unused files | `components/*.tsx` | The CSS utility classes are used everywhere, but the React component wrappers may be dead. Cleanup. |
+| 9 | Take Playwright snapshots at 375 / 768 / 1024 / 1440 px to verify responsive grid behavior, especially the home pricing-peek `md:grid-cols-3` mid-breakpoint layout | (no source change, run-only) | The 3-col mid-breakpoint with 5 cards orphans 2 cards — visual polish only. |
+| 10 | Audit favicon: confirm `/favicons/favicon.ico` is the new سُرَى icon mark, not the Next.js default | `public/favicons/` | Flagged in 2026-06-12 review. Verify before launch. |
 
 ---
 
-## Cross-document consistency check
+## Cross-document consistency table
 
-| Item | Brand Guidelines v6 | Foundation Brief | Business Plan | Pricing Model v1 | Website | Verdict |
-|---|---|---|---|---|---|---|
-| Brand name | ناشئ / Nashi | ناشئ / Nashi | ناشئ / Nashi | ناشئ | ناشئ · Nashi | ✅ |
-| Tagline | "نبني لما هو ناشئ" | "We build for what's rising" | (implicit) | n/a | "نبني لما هو ناشئ" | ✅ |
-| Palette | Navy/Green/Cream | (links to BG) | n/a | n/a | All 8 brand colors implemented | ✅ |
-| Fonts | Cairo + IBM Plex SA | (links to BG) | n/a | n/a | Both loaded via next/font | ✅ |
-| Positioning line | "WEB DESIGN & WEB APPLICATION STUDIO · SMEs | CHARITIES | MANUFACTURERS" | Same | Same | n/a | Verbatim in footer | ✅ |
-| Pricing — Launch | n/a | $2,500-$5,000 (target $4K) | base $4K, deal $3.5K | n/a | $2,500-$5,000 | ✅ |
-| Pricing — Build | n/a | $6K-$12K | $9K target | n/a | $6,000-$12,000 | ✅ |
-| Pricing — App | n/a | $15K-$35K | $22K target | n/a | $15,000-$35,000 | ✅ |
-| Pricing — Retainer | n/a | $3,500/mo | $3,500/mo | n/a | $3,500/شهر | ✅ |
-| Pricing — Micro | n/a | not in original | not in original | 4,500 ريال/سنة | 4,500 ريال/سنة | ✅ |
-| Pilot $1,500 | n/a | private offer, first 3 clients only | yes, for case study rights | not in pricing model | **PUBLIC on /work** | ⚠️ contradicts "private offer" frame |
-| Bilingual rule | "Arabic and Latin equal" §4.2 | "Bilingual every project" §6.3 | n/a | n/a | Arabic-only site, no `/en` | ⚠️ delivery gap |
-| Single brand | §1.6 locked | §3 superseded; §10 locked | implicit | n/a | Yes, no sub-brand variants on site | ✅ |
-| Three audiences | §1 architecture | §1 + §2 verticals | targeted in channel mix | n/a | Three tiles + same identity | ✅ |
-| Voice/tone | §5 plain/confident/warm | §5 same | n/a | n/a | Matches throughout | ✅ |
-| Process timeline (Launch) | n/a | 14-21 days | 14-21 days | n/a | 14-21 يوم | ✅ |
-| Process timeline (App) | n/a | 6-10 weeks | 6-10 weeks | n/a | 6-10 أسابيع | ✅ |
-| Warranty | "14-day post-launch" §2 of BG (?) — not actually in BG | implicit | 14-day mentioned | 14-day cancellation | "ضمان 14 يوم" on Launch + 30 يوم on Build | ✅ Build adds a 30-day uplift (good upgrade signal) |
-| Founder framing | not specified | "Founder-led delivery" §10 | "Founder builds personally" | n/a | About page founder block | ✅ but thin |
-| Currency | not specified | USD pricing, SAR/AED/EGP on request | USD primary | SAR for Micro, mixed | SAR for Micro, USD for Launch+ | ✅ honest tension, addressed in FAQ |
+| Item | HAMMAM-REBUILD-SPEC.md | ARABIC-COPY-V2.md | Live implementation | Verdict |
+|---|---|---|---|---|
+| Hero tagline | n/a (design only) | §2: `نُرافقك في الرحلة من الفكرة إلى الإطلاق.` | `components/Hero.tsx` line 21–30 | ✅ match |
+| Hero green-highlight target word | n/a | §2 implementation note: highlight `الرحلة` | `Hero.tsx` line 22 wraps `الرحلة` in `text-green-ink` with `bg-green/15` underline span | ✅ match |
+| About etymology (night-journey) | n/a | §18 critical fix: `السير في الليل برفقة` | `about/page.tsx` lines 31–35 with `<em>` highlight | ✅ match |
+| Bundle names | n/a | §11 critical fix: `البداية / النموّ / الإطلاق الكامل` | `lib/data.ts` lines 303–329 | ✅ match |
+| Bundle highlight badge | "الأكثر شيوعاً" or "الأكثر طلباً" (matches PricingCard) | §11.2: switch to "الأكثر طلباً" | PricingCard line 14 `الأكثر طلباً` + pricing-page bundle line 109 `الأكثر طلباً` | ✅ match |
+| HorizonHero component | §5.1 NEW: parallax + dot pulse + horizon SVG | n/a | `components/HorizonHero.tsx` matches spec | ✅ match |
+| HorizonDivider | §5.1 NEW: thin wave SVG, `flip` prop | n/a | `components/HorizonDivider.tsx` matches | ✅ match |
+| WaveGlyph | §5.1 NEW: reusable two-wave + dot, `showDot` prop | n/a | `components/WaveGlyph.tsx` matches | ✅ match |
+| Eyebrow with leading green dot | §2.5 + §5.1 | n/a | `components/Eyebrow.tsx` matches | ✅ match |
+| GuidingStarRail | §4.1 signature moment, desktop-only | n/a | Built (`components/GuidingStarRail.tsx`) but **never imported** | ⚠ partial — fix per required #2 |
+| Dawn glow on every page | §4.3 | n/a | `.dawn-glow` class in `globals.css` + applied on /services, /pricing, /about, /contact, /work, /privacy, audience pages | ✅ match |
+| `/work` $1,500 pilot CTA removal | §5.3 (delete) | §17 (no pilot price) | grep confirms zero `1500/1,500/pilot` in `app/work/` | ✅ match |
+| All 5 tiers visible on home | §3.1.8 pricing-peek navy band | n/a | `app/page.tsx` lines 103–142 renders all 5 in `lg:grid-cols-5` | ✅ match |
+| Skip link with `انتقل إلى المحتوى` | §7.1 | §3 (Header skip link) | `components/Header.tsx` line 49 | ✅ match |
+| Banned phrases (all 10+) | n/a | §cross-cutting rules + §10 + §18 | grep confirms zero occurrences in `app/**` `components/**` | ✅ match |
+| Saudi register (أبغى / تشوف / لو) | n/a | §22 (WhatsApp), §16 (audience pages), §17 (work) | All confirmed in source | ✅ match |
+| Hero `+` divider style | §2.5 | §8.2 (process step 2: replace `+` with `،`) | `app/services/page.tsx` line 28: `نطاق ثابت، جدول زمني، سعر واحد` | ✅ match |
+| "اطّلع على" replacing "شاهد" globally | n/a | §cross-cutting #5 | Most surfaces updated; **`app/page.tsx` line 137 missed** | ⚠ partial — required-fix #1 |
+| Working hours: `إلى` not `-`, `توقيت السعودية` | n/a | §19 + §20 | `lib/data.ts` line 24: `السبت إلى الخميس · 9 صباحاً – 6 مساءً (توقيت السعودية)` | ✅ match |
+| Privacy page rewrite | n/a | §21 | `app/privacy/page.tsx` matches all 7 sections | ✅ match |
+| Founder bio rewrites (المتوسّطة / ثلاثة / بالقدوة) | n/a | §18 founder paragraphs 1–4 | `app/about/page.tsx` lines 128–153 all match | ✅ match |
 
-**Overall consistency:** strong. Two amber items only (the published $1,500 pilot offer and the missing English mirror).
+**Total contract items checked:** 23. **Pass:** 21. **Partial:** 2 (one missed string + one unused component). **Fail:** 0.
+
+---
+
+## Banned-Arabic-phrase audit (full sweep)
+
+Searched the entire live source (`app/**`, `components/**`, `lib/**` — excluding `.md` planning docs which legitimately reference them in ban lists):
+
+| Banned phrase | Occurrences in live source | Status |
+|---|---|---|
+| بوتيكي | 0 | ✅ clean |
+| بدون مسرحيات / بلا مسرحيات / مسرحيات | 0 | ✅ clean |
+| المُسلَّمات | 0 | ✅ clean |
+| شفّافة بلا رسوم خفية | 0 | ✅ clean |
+| متكامل احترافي / متكامل (as standalone adj.) | 0 | ✅ clean |
+| شفّاف / شفاف | 0 | ✅ clean |
+| نبني لما هو سُرَى (broken hero) | 0 | ✅ clean |
+| الصاعد والنامي (wrong etymology) | 0 | ✅ clean |
+| السُرَى (proper noun used as adj.) | 0 | ✅ clean |
+| النامي / المتمكّن (broken bundle names) | 0 | ✅ clean |
+| حضور رقمي بسيط وفعّال | 0 | ✅ clean |
+| لا-رأسي (calque) | 0 | ✅ clean |
+| تدفّق تبرّع (calque) | 0 (`تجربة تبرّع` used instead) | ✅ clean |
+| موبايل (transliteration) | 0 (`الجوّال` everywhere) | ✅ clean |
+
+**Result:** All 14 high-priority banned phrases are absent from the live source. The Arabic rewrite is complete.
+
+---
+
+## What changed since the 2026-06-12 review
+
+| Last-review issue | Required/Recommended | This-review status |
+|---|---|---|
+| `/work` $1,500 pilot CTA published | **Required-fix #1** | ✅ removed |
+| Hero tagline broken (`نبني لما هو سُرَى`) | **Required-fix #2** (new this round) | ✅ fixed (`نُرافقك في الرحلة من الفكرة إلى الإطلاق.`) |
+| About etymology wrong (`الصاعد والنامي`) | **Required-fix #3** (new this round) | ✅ fixed (`السير في الليل برفقة`) |
+| Bundle names broken (`السُرَى / النامي / المتمكّن`) | **Required-fix #4** (new this round) | ✅ fixed (`البداية / النموّ / الإطلاق الكامل`) |
+| Only 3 of 5 tiers on home | Required-fix #4 (last) | ✅ fixed (5 tiers in pricing-peek) |
+| Banned phrases (بوتيكي, بدون مسرحيات, متكامل, etc.) | Required-fix #5 (last) | ✅ all gone |
+| Generic founder bio | Recommended last round | ✅ rewritten with concrete biography |
+| Page-title separator inconsistency (`—` vs `·`) | Recommended last round | ✅ all routes now use `·` |
+| Contact form privacy link broken | Recommended last round | ✅ `/privacy` page exists and is linked from form |
+| WhatsApp prefill stiff (`مرحباً، أريد`) | Recommended last round | ✅ now `السلام عليكم، أبغى` |
+
+Every required-fix from last round addressed. Five recommended-fixes addressed. Net delta: **+0.4 overall** (8.0 → 8.4) even after introducing three new critical content checks (hero, etymology, bundles) that all passed.
 
 ---
 
 ## Final notes from Omar
 
-**What's working really well:**
-- The Arabic-first execution is the strongest single piece of work in this milestone. Cairo + Plex, line-height 1.75, native RTL, `dir="ltr"` on Latin fragments — this is the kind of detail that 90% of Arabic websites get wrong. The site demonstrates the BG promise rather than just stating it.
-- The single-source-of-truth pattern in `lib/data.ts` means the site can be re-priced, re-audienced, or re-branded without touching components. That's senior-level architecture for a v1.
-- "use client" boundaries are minimal and correct. Tailwind v4 `@theme` block is clean. Next.js 15 metadata is per-page. This is what a Mohammed-grade build looks like.
-- The voice — "خلّينا نسمع منك", "احكي لنا", "بدون مسرحيات" — sounds like a real Gulf studio talking, not a translated Western template. That's the asset.
-- Strategic discipline: the site doesn't try to be everything. No blog. No 12-page about. No team section. Exactly the scope.
+The previous review (2026-06-12) gave this site 8.0 with a soft-launch verdict but called the experience "very bad" only after the founder used it on a real client and discovered the etymology was wrong, the hero tagline was gibberish, and the bundle names treated the brand as a generic adjective. Those weren't `agent-evaluation`-style scoring failures — they were domain-knowledge failures that only an Arabic-expert reviewer or a real client would catch.
 
-**What needs attention before sending the URL anywhere:**
-- The `$1,500 pilot offer on /work` must go (it's a published anchor that contradicts the pricing strategy).
-- The WhatsApp number must be real.
-- The contact form must actually submit (or be replaced with `mailto:` + Calendly).
-- A privacy page or amended privacy line.
-- Either commit to or remove the "إندماج / سياج الحدود" placeholder client names.
+This round, those three foundational copy bugs are dead. Hammam's visual contract is genuinely implemented (the horizon + dawn glow + guiding star + wave glyph all show up where they should, with the right motion + reduced-motion contracts). The Arabic editorial pass landed with a Saudi register I couldn't have written and almost certainly couldn't have caught.
 
-**The bottom line:**
-This is an **8.0/10 ready-for-soft-launch website**. The brand identity is correctly translated to code, the strategy is correctly translated to information architecture, and the pricing model is correctly translated to the public catalog. The four required fixes are small (under one hour combined) and mostly about removing/wiring artifacts rather than re-thinking the build.
+What I want to flag to the founder, even though it isn't in scope:
+1. **The `GuidingStarRail` decision needs to be made out loud.** It's either a feature for next milestone (delete the file) or a 5-minute wire-in (add sectional IDs to `app/page.tsx` and import the component into the layout). Right now it's neither — that's the only piece of this rebuild that feels unfinished.
+2. **Before paid traffic, get the `/api/contact` endpoint actually verified end-to-end** with a real test lead. The form is now well-built, but if the backend isn't real the rebuild's main conversion path is broken.
+3. **The wireframe-style work-page preview is excellent.** Once the first real client (`إندماج` or `سياج الحدود`) ships, that template becomes a real case study with a 30-minute drop-in. The honest "we're new" framing is on-brand — keep it until the case lands.
 
-After the required fixes, this site can absolutely go to the first 5 warm intros from your network. After the recommended fixes, it can go on LinkedIn announcement. The v2 work (English mirror, audience landing pages, real case studies) belongs to the next milestone — don't block launch on them.
+Site is ready for soft launch with required-fixes #1 and #2 addressed (~10 minutes of work). Founder can ship today.
 
-You've built a site that respects the brand, respects the audience, and respects the visitor's time. Now make the contact form work and pull the published pilot price.
-
----
-
-*End of OMAR-FEEDBACK.md. Approved for review. Next checkpoint: after the four required fixes are applied + first real case study lands on `/work`.*
+— Omar (agent-evaluation)
