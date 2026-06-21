@@ -33,12 +33,12 @@ export default function ServicesShowcase() {
                   <span className="tilt-pop inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-navy to-navy-deep text-green-glow shadow-lg">
                     <Icon name={s.icon} size={28} />
                   </span>
-                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-green-ink">
+                  <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.28em] text-green-ink">
                     {String(i + 1).padStart(2, "0")} · خدمة
                   </p>
-                  <h3 className="mt-3 text-2xl font-bold text-navy">{s.title}</h3>
-                  <p className="mt-3 text-navy/80">{s.description}</p>
-                  <ul className="mt-6 space-y-2">
+                  <h3 className="mt-3 text-2xl font-bold leading-snug text-navy">{s.title}</h3>
+                  <p className="mt-3 leading-relaxed text-navy/80">{s.description}</p>
+                  <ul className="mt-6 space-y-2.5">
                     {s.bullets.map((b) => (
                       <li
                         key={b}

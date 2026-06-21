@@ -114,13 +114,13 @@ export default function CinematicHero() {
 
       {/* Layer 3 — content */}
       <div ref={layerMid} className="relative mx-auto max-w-6xl px-5 md:px-8 will-change-transform">
-        <div className="flex flex-col items-start gap-4">
+        <div className="flex flex-col items-start">
           <span className="card-glass inline-flex items-center gap-2 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.2em] text-cream/90">
             <span className="block h-1.5 w-1.5 rounded-full bg-green-glow star-pulse" />
             استوديو ويب · الرياض · نستقبل مشاريع الربع القادم
           </span>
 
-          <h1 className="display-hero mt-6 max-w-4xl text-[44px] md:text-[88px] lg:text-[104px]">
+          <h1 className="display-hero mt-10 max-w-4xl text-[44px] leading-[1.12] md:mt-12 md:text-[88px] md:leading-[1.08] lg:text-[104px]">
             <span className="block text-cream">نُرافقك في</span>
             <span className="block">
               <span className="relative inline-block">
@@ -140,13 +140,13 @@ export default function CinematicHero() {
             <span className="block text-cream">إلى الإطلاق.</span>
           </h1>
 
-          <p className="mt-8 max-w-2xl text-lg leading-[1.85] text-cream/85 md:text-xl">
+          <p className="mt-10 max-w-2xl text-lg leading-[1.9] text-cream/85 md:mt-12 md:text-xl">
             نبني مواقع وتطبيقات ويب للشركات الصغيرة والجمعيات والمصانع. عربي
             وإنجليزي بنفس العناية، إطلاق خلال أسابيع، وسعر متّفق عليه من اليوم
             الأول.
           </p>
 
-          <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <div className="mt-12 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
             <MagneticButton href="/contact" className="btn btn-accent btn-magnetic">
               ابدأ مشروعك
               <Icon name="arrow" size={18} style={{ transform: "scaleX(-1)" }} aria-hidden />
@@ -161,7 +161,7 @@ export default function CinematicHero() {
           </div>
 
           {/* Trust bar */}
-          <ul className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-cream/75">
+          <ul className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-cream/75">
             <li className="inline-flex items-center gap-2">
               <Icon name="check" size={16} className="text-green-glow" aria-hidden />
               إطلاق خلال 14–21 يوم
